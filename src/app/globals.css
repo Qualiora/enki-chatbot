@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
+@import "./themes.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -129,14 +130,6 @@
   }
 }
 
-/*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
 @layer base {
   *,
   ::after,
@@ -196,35 +189,6 @@
   --sidebar-accent-foreground: var(--accent-foreground);
   --sidebar-border: var(--border);
   --sidebar-ring: var(--ring);
-
-  /* Calendar vars */
-  --fc-small-font-size: 0.875em;
-  --fc-page-bg-color: hsl(var(--border));
-  --fc-neutral-bg-color: hsl(var(--border));
-  --fc-neutral-text-color: hsl(var(--accent-foreground));
-  --fc-border-color: hsl(var(--border));
-  --fc-button-text-color: hsl(var(--background));
-  --fc-button-bg-color: hsl(var(--primary));
-  --fc-button-border-color: hsl(var(--primary));
-  --fc-button-hover-bg-color: hsl(var(--primary) / 0.8);
-  --fc-button-hover-border-color: hsl(var(--primary));
-  --fc-button-active-bg-color: hsl(var(--primary) / 0.8);
-  --fc-button-active-border-color: hsl(var(--primary) / 0);
-  --fc-event-bg-color: hsl(var(--primary));
-  --fc-event-border-color: hsl(var(--primary));
-  --fc-event-text-color: hsl(var(--background));
-  --fc-event-selected-overlay-color: hsl(var(--muted));
-  --fc-more-link-bg-color: hsl(var(--muted));
-  --fc-more-link-text-color: inherit;
-  --fc-event-resizer-thickness: 8px;
-  --fc-event-resizer-dot-total-width: 8px;
-  --fc-event-resizer-dot-border-width: var(--radius);
-  --fc-non-business-color: rgba(215, 215, 215, 0.3);
-  --fc-bg-event-color: hsl(var(--success));
-  --fc-bg-event-opacity: 0.3;
-  --fc-highlight-color: rgba(188, 232, 241, 0.3);
-  --fc-today-bg-color: hsl(var(--primary) / 0.15);
-  --fc-now-indicator-color: hsl(var(--destructive));
 }
 .dark {
   --background: 240 10% 3.9%;

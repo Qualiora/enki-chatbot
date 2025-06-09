@@ -2,7 +2,6 @@
 
 import * as SheetPrimitive from "@radix-ui/react-dialog"
 import { cva } from "class-variance-authority"
-import { X } from "lucide-react"
 
 import type { ComponentProps } from "react"
 
@@ -28,22 +27,9 @@ export function SheetTrigger({
 }
 
 export function SheetClose({
-  className,
   ...props
 }: ComponentProps<typeof SheetPrimitive.Close>) {
-  return (
-    <SheetPrimitive.Close
-      data-slot="sheet-close"
-      className={cn(
-        "ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none",
-        className
-      )}
-      {...props}
-    >
-      <X className="h-4 w-4" />
-      <span className="sr-only">Close</span>
-    </SheetPrimitive.Close>
-  )
+  return <SheetPrimitive.Close data-slot="sheet-close" {...props} />
 }
 
 export function SheetPortal({

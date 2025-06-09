@@ -1,25 +1,29 @@
 import { Cairo, Lato } from "next/font/google"
+import { getServerSession } from "next-auth"
 
+import { i18n } from "@/configs/i18n"
+import { authOptions } from "@/configs/next-auth"
 import { cn } from "@/lib/utils"
 
-import "./globals.css"
+import "../globals.css"
 
-import { Providers } from "@/providers"
-
+import type { LocaleType } from "@/types"
 import type { Metadata } from "next"
 import type { ReactNode } from "react"
 
 import { Toaster as Sonner } from "@/components/ui/sonner"
 import { Toaster } from "@/components/ui/toaster"
+import { Providers } from "@/components/providers"
 
 // Define metadata for the application
 // More info: https://nextjs.org/docs/app/building-your-application/optimizing/metadata
 export const metadata: Metadata = {
   title: {
-    template: "%s | Enki Chatbot",
-    default: "Enki Chatbot",
+    template: "%s | Shadboard",
+    default: "Shadboard",
   },
-  description: "",
+  description:
+    "Chat with multiple AI models including GPT-4, Claude, and Gemini",
   metadataBase: new URL(process.env.BASE_URL as string),
 }
 
@@ -38,11 +42,19 @@ const cairoFont = Cairo({
   variable: "--font-cairo",
 })
 
-export default function RootLayout(props: { children: ReactNode }) {
+export default async function RootLayout(props: {
+  children: ReactNode
+  params: Promise<{ lang: LocaleType }>
+}) {
+  const params = await props.params
+
   const { children } = props
 
+  const session = await getServerSession(authOptions)
+  const direction = i18n.localeDirection[params.lang]
+
   return (
-    <html lang="en" dir="ltr" suppressHydrationWarning>
+    <html lang={params.lang} dir={direction} suppressHydrationWarning>
       <body
         className={cn(
           "[&:lang(en)]:font-lato [&:lang(ar)]:font-cairo", // Set font styles based on the language
@@ -51,7 +63,7 @@ export default function RootLayout(props: { children: ReactNode }) {
           cairoFont.variable // Include Cairo font variable
         )}
       >
-        <Providers locale="en">
+        <Providers locale={params.lang} direction={direction} session={session}>
           {children}
           <Toaster />
           <Sonner />

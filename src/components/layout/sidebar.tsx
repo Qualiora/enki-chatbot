@@ -1,24 +1,23 @@
 "use client"
 
-import Image from "next/image"
+import { useEffect, useState } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { ChevronDown } from "lucide-react"
-
-import type { NavigationNestedItem, NavigationRootItem } from "@/types"
-
-import { navigationsData } from "@/data/navigations"
-
-import { isActivePathname } from "@/lib/utils"
-
-import { useSettings } from "@/hooks/use-settings"
-import { Badge } from "@/components/ui/badge"
+import { useParams } from "next/navigation"
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible"
-import { ScrollArea } from "@/components/ui/scroll-area"
+  differenceInCalendarDays,
+  format,
+  isToday,
+  isYesterday,
+} from "date-fns"
+import { Plus, Sparkles } from "lucide-react"
+
+import type { DictionaryType } from "@/lib/get-dictionary"
+import type { LocaleType } from "@/types"
+
+import { i18n } from "@/configs/i18n"
+import { ensureLocalizedPathname } from "@/lib/i18n"
+
+import { Button } from "@/components/ui/button"
 import {
   SidebarContent,
   SidebarGroup,
@@ -28,116 +27,130 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
   Sidebar as SidebarWrapper,
-  useSidebar,
 } from "@/components/ui/sidebar"
-import { DynamicIcon } from "@/components/dynamic-icon"
-import { CommandMenu } from "./command-menu"
 
-export function Sidebar() {
-  const pathname = usePathname()
-  const { openMobile, setOpenMobile, isMobile } = useSidebar()
-  const { settings } = useSettings()
+interface Chat {
+  id: string
+  title: string
+  createdAt: string
+  updatedAt: string
+}
 
-  const isHoizontalAndDesktop = settings.layout === "horizontal" && !isMobile
+function getDateGroupLabel(date: Date): string {
+  if (isToday(date)) return "Today"
+  if (isYesterday(date)) return "Yesterday"
 
-  // If the layout is horizontal and not on mobile, don't render the sidebar. (We use a menubar for horizontal layout navigation.)
-  if (isHoizontalAndDesktop) return null
+  const diff = differenceInCalendarDays(new Date(), date)
+  if (diff === 2) return "2 days ago"
+  if (diff === 3) return "3 days ago"
+  if (diff <= 7) return `${diff} days ago`
+  if (diff <= 14) return "Last week"
+  if (diff <= 21) return "2 weeks ago"
+  return format(date, "MMMM d, yyyy")
+}
 
-  const renderMenuItem = (item: NavigationRootItem | NavigationNestedItem) => {
-    // If the item has nested items, render it with a collapsible dropdown.
-    if (item.items) {
-      return (
-        <Collapsible className="group/collapsible">
-          <CollapsibleTrigger asChild>
-            <SidebarMenuButton className="w-full justify-between [&[data-state=open]>svg]:rotate-180">
-              <span className="flex items-center">
-                {"iconName" in item && (
-                  <DynamicIcon name={item.iconName} className="me-2 h-4 w-4" />
-                )}
-                <span>{item.title}</span>
-                {"label" in item && (
-                  <Badge variant="secondary" className="me-2">
-                    {item.label}
-                  </Badge>
-                )}
-              </span>
-              <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200" />
-            </SidebarMenuButton>
-          </CollapsibleTrigger>
-          <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
-            <SidebarMenuSub>
-              {item.items.map((subItem: NavigationNestedItem) => (
-                <SidebarMenuItem key={subItem.title}>
-                  {renderMenuItem(subItem)}
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenuSub>
-          </CollapsibleContent>
-        </Collapsible>
-      )
-    }
+export function Sidebar({ dictionary }: { dictionary: DictionaryType }) {
+  const { threadId } = useParams()
+  const params = useParams()
 
-    // Otherwise, render the item with a link.
-    if ("href" in item) {
-      const isActive = isActivePathname(item.href, pathname)
+  const locale = params.lang as LocaleType
+  const direction = i18n.localeDirection[locale]
+  const isRTL = direction === "rtl"
+  const [chats, setChats] = useState<Chat[]>([])
+  const [loading, setLoading] = useState(true)
 
-      return (
-        <SidebarMenuButton
-          isActive={isActive}
-          onClick={() => setOpenMobile(!openMobile)}
-          asChild
-        >
-          <Link href={item.href}>
-            {"iconName" in item && (
-              <DynamicIcon name={item.iconName} className="h-4 w-4" />
-            )}
-            <span>{item.title}</span>
-            {"label" in item && <Badge variant="secondary">{item.label}</Badge>}
-          </Link>
-        </SidebarMenuButton>
-      )
+  useEffect(() => {
+    fetchChats()
+  }, [])
+
+  const fetchChats = async () => {
+    try {
+      const response = await fetch("/api/chats")
+      if (response.ok) {
+        const data = await response.json()
+        setChats(data)
+      }
+    } catch (error) {
+      console.error("Failed to fetch chats:", error)
+    } finally {
+      setLoading(false)
     }
   }
 
+  const groupedChats = chats.reduce<Record<string, Chat[]>>((acc, chat) => {
+    const date = new Date(chat.updatedAt)
+    const label = getDateGroupLabel(date)
+    if (!acc[label]) acc[label] = []
+    acc[label].push(chat)
+    return acc
+  }, {})
+
+  const sortedGroupKeys = Object.keys(groupedChats).sort((a, b) => {
+    const aDate = new Date(groupedChats[a][0].updatedAt)
+    const bDate = new Date(groupedChats[b][0].updatedAt)
+    return bDate.getTime() - aDate.getTime()
+  })
+
   return (
-    <SidebarWrapper side="left">
-      <SidebarHeader>
-        <Link
-          href="/"
-          className="w-fit p-1.5"
-          onClick={() => isMobile && setOpenMobile(!openMobile)}
-        >
-          <Image
-            src="/images/logos/enki-chatbot.svg"
-            alt=""
-            height={36}
-            width={36}
-            className="h-9 w-auto dark:invert"
-          />
-          <span className="sr-only">Enki Chatbot logo</span>
-        </Link>
-        <CommandMenu buttonClassName="max-w-full" />
+    <SidebarWrapper side={isRTL ? "right" : "left"}>
+      <SidebarHeader className="border-b">
+        <div className="flex items-center gap-2 px-2 py-2">
+          <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
+            <Sparkles className="w-4 h-4 text-white" />
+          </div>
+          <span className="font-semibold text-lg">Enki Chatbot</span>
+        </div>
+        <Button size="lg">
+          <Plus className="me-2 w-4 h-4" />
+          New Chat
+        </Button>
       </SidebarHeader>
-      <ScrollArea>
-        <SidebarContent className="gap-0">
-          {navigationsData.map((nav) => (
-            <SidebarGroup key={nav.title}>
-              <SidebarGroupLabel>{nav.title}</SidebarGroupLabel>
+
+      <SidebarContent>
+        {loading ? (
+          <div className="text-sm text-muted-foreground text-center py-4">
+            Loading chats...
+          </div>
+        ) : sortedGroupKeys.length === 0 ? (
+          <div className="text-sm text-muted-foreground text-center py-4">
+            No chats yet
+          </div>
+        ) : (
+          sortedGroupKeys.map((groupLabel) => (
+            <SidebarGroup key={groupLabel}>
+              <SidebarGroupLabel>{groupLabel}</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  {nav.items.map((item) => (
-                    <SidebarMenuItem key={item.title}>
-                      {renderMenuItem(item)}
-                    </SidebarMenuItem>
-                  ))}
+                  {groupedChats[groupLabel]
+                    .sort(
+                      (a, b) =>
+                        new Date(b.updatedAt).getTime() -
+                        new Date(a.updatedAt).getTime()
+                    )
+                    .map((chat) => (
+                      <SidebarMenuItem key={chat.id}>
+                        <SidebarMenuButton
+                          isActive={threadId === chat.id}
+                          asChild
+                        >
+                          <Link
+                            href={ensureLocalizedPathname(
+                              "/chat/" + chat.id,
+                              locale
+                            )}
+                          >
+                            {chat.title}
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ))}
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
-          ))}
-        </SidebarContent>
-      </ScrollArea>
+          ))
+        )}
+      </SidebarContent>
     </SidebarWrapper>
   )
 }

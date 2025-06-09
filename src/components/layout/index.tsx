@@ -1,17 +1,24 @@
-"use client"
-
+import type { DictionaryType } from "@/lib/get-dictionary"
 import type { ReactNode } from "react"
 
-import { Header } from "./header"
-import { Sidebar } from "./sidebar"
+import { Customizer } from "@/components/customizer"
+import { Header } from "@/components/layout/header"
+import { Sidebar } from "@/components/layout/sidebar"
 
-export function Layout({ children }: { children: ReactNode }) {
+export function Layout({
+  children,
+  dictionary,
+}: {
+  children: ReactNode
+  dictionary: DictionaryType
+}) {
   return (
     <>
-      <Sidebar />
+      <Customizer />
+      <Sidebar dictionary={dictionary} />
       <div className="w-full">
-        <Header />
-        <main className="min-h-[calc(100svh-4rem)] bg-muted/50">
+        <Header dictionary={dictionary} />
+        <main className="min-h-[calc(100svh-3.525rem)] bg-muted/50">
           {children}
         </main>
       </div>

@@ -1,9 +1,13 @@
 "use client"
 
 import { useCallback } from "react"
+import { useParams } from "next/navigation"
 import { MoonStar, Sun, SunMoon } from "lucide-react"
 
-import type { ModeType } from "@/types"
+import type { DictionaryType } from "@/lib/get-dictionary"
+import type { LocaleType, ModeType } from "@/types"
+
+import { i18n } from "@/configs/i18n"
 
 import { useSettings } from "@/hooks/use-settings"
 import { Button } from "@/components/ui/button"
@@ -23,9 +27,12 @@ const modeIcons = {
   system: SunMoon,
 }
 
-export function ModeDropdown() {
+export function ModeDropdown({ dictionary }: { dictionary: DictionaryType }) {
   const { settings, updateSettings } = useSettings()
+  const params = useParams()
 
+  const locale = params.lang as LocaleType
+  const direction = i18n.localeDirection[locale]
   const mode = settings.mode
   const ModeIcon = modeIcons[mode]
 
@@ -37,27 +44,27 @@ export function ModeDropdown() {
   )
 
   return (
-    <DropdownMenu>
+    <DropdownMenu dir={direction}>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" aria-label="Mode">
           <ModeIcon className="size-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Mode</DropdownMenuLabel>
+        <DropdownMenuLabel>{dictionary.navigation.mode.mode}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuRadioGroup value={mode}>
           <DropdownMenuRadioItem value="light" onClick={() => setMode("light")}>
-            Light
+            {dictionary.navigation.mode.light}
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="dark" onClick={() => setMode("dark")}>
-            Dark
+            {dictionary.navigation.mode.dark}
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem
             value="system"
             onClick={() => setMode("system")}
           >
-            System
+            {dictionary.navigation.mode.system}
           </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>

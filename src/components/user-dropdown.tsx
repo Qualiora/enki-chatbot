@@ -1,8 +1,13 @@
 import Link from "next/link"
-import { CircleHelp, FileCheck2, LogOut, UserCog } from "lucide-react"
+import { signOut } from "next-auth/react"
+import { LogOut, User, UserCog } from "lucide-react"
+
+import type { DictionaryType } from "@/lib/get-dictionary"
+import type { LocaleType } from "@/types"
 
 import { userData } from "@/data/user"
 
+import { ensureLocalizedPathname } from "@/lib/i18n"
 import { getInitials } from "@/lib/utils"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -17,7 +22,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-export function UserDropdown() {
+export function UserDropdown({
+  dictionary,
+  locale,
+}: {
+  dictionary: DictionaryType
+  locale: LocaleType
+}) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -51,36 +62,29 @@ export function UserDropdown() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuGroup>
+        <DropdownMenuGroup className="max-w-48">
           <DropdownMenuItem asChild>
-            <Link href="/">
+            <Link
+              href={ensureLocalizedPathname("/pages/account/profile", locale)}
+            >
+              <User className="me-2 size-4" />
+              {dictionary.navigation.userNav.profile}
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link
+              href={ensureLocalizedPathname("/pages/account/settings", locale)}
+            >
               <UserCog className="me-2 size-4" />
-              Settings
+              {dictionary.navigation.userNav.settings}
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
-            <Link href="/">
-              <CircleHelp className="me-2 size-4" />
-              Help & FAQ
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="/">
-              <FileCheck2 className="me-2 size-4" />
-              Terms & Policies
-            </Link>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <LogOut className="me-2 size-4" />
-            Sign Out
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
+        <DropdownMenuItem onClick={() => signOut()}>
+          <LogOut className="me-2 size-4" />
+          {dictionary.navigation.userNav.signOut}
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

@@ -10,7 +10,7 @@ import {
 } from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva } from "class-variance-authority"
-import { Menu, PanelLeft } from "lucide-react"
+import { PanelLeft } from "lucide-react"
 
 import type { VariantProps } from "class-variance-authority"
 import type { CSSProperties, ComponentProps } from "react"
@@ -277,8 +277,7 @@ export function SidebarTrigger({
       }}
       {...props}
     >
-      <PanelLeft className="hidden h-4 w-4 md:inline" />
-      <Menu className="inline h-4 w-4 md:hidden" />
+      <PanelLeft className="h-4 w-4" />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   )

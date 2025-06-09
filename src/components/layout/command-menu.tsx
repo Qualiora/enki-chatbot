@@ -1,15 +1,26 @@
 "use client"
 
 import { Fragment, useCallback, useEffect, useState } from "react"
-import { usePathname, useRouter } from "next/navigation"
+import { useParams, usePathname, useRouter } from "next/navigation"
 import { ChevronDown, Search } from "lucide-react"
 
-import type { NavigationNestedItem, NavigationRootItem } from "@/types"
+import type { DictionaryType } from "@/lib/get-dictionary"
+import type {
+  LocaleType,
+  NavigationNestedItem,
+  NavigationRootItem,
+} from "@/types"
 import type { DialogProps } from "@radix-ui/react-dialog"
 
 import { navigationsData } from "@/data/navigations"
 
-import { cn, isActivePathname } from "@/lib/utils"
+import { ensureLocalizedPathname } from "@/lib/i18n"
+import {
+  cn,
+  getDictionaryValue,
+  isActivePathname,
+  titleCaseToCamelCase,
+} from "@/lib/utils"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -32,13 +43,21 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { DynamicIcon } from "@/components/dynamic-icon"
 
 interface CommandMenuProps extends DialogProps {
+  dictionary: DictionaryType
   buttonClassName?: string
 }
 
-export function CommandMenu({ buttonClassName, ...props }: CommandMenuProps) {
+export function CommandMenu({
+  buttonClassName,
+  dictionary,
+  ...props
+}: CommandMenuProps) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
+  const params = useParams()
   const router = useRouter()
+
+  const locale = params.lang as LocaleType
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -67,6 +86,14 @@ export function CommandMenu({ buttonClassName, ...props }: CommandMenuProps) {
   }, [])
 
   const renderMenuItem = (item: NavigationRootItem | NavigationNestedItem) => {
+    const title = getDictionaryValue(
+      titleCaseToCamelCase(item.title),
+      dictionary.navigation
+    )
+    const label =
+      item.label &&
+      getDictionaryValue(titleCaseToCamelCase(item.label), dictionary.label)
+
     // If the item has nested items, render it with a collapsible dropdown.
     if (item.items) {
       return (
@@ -77,10 +104,8 @@ export function CommandMenu({ buttonClassName, ...props }: CommandMenuProps) {
                 {"iconName" in item && (
                   <DynamicIcon name={item.iconName} className="h-4 w-4" />
                 )}
-                <span>{item.title}</span>
-                {"label" in item && (
-                  <Badge variant="secondary">{item.label}</Badge>
-                )}
+                <span>{title}</span>
+                {"label" in item && <Badge variant="secondary">{label}</Badge>}
               </span>
               <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200" />
             </CollapsibleTrigger>
@@ -96,12 +121,13 @@ export function CommandMenu({ buttonClassName, ...props }: CommandMenuProps) {
 
     // Otherwise, render the item with a link.
     if ("href" in item) {
-      const isActive = isActivePathname(item.href, pathname)
+      const localizedPathname = ensureLocalizedPathname(item.href, locale)
+      const isActive = isActivePathname(localizedPathname, pathname)
 
       return (
         <CommandItem
           key={item.title}
-          onSelect={() => runCommand(() => router.push(item.href))}
+          onSelect={() => runCommand(() => router.push(localizedPathname))}
           className={cn(
             "flex items-center gap-2 px-2 py-1.5",
             isActive && "bg-accent"
@@ -112,8 +138,8 @@ export function CommandMenu({ buttonClassName, ...props }: CommandMenuProps) {
           ) : (
             <DynamicIcon name="Circle" />
           )}
-          <span>{item.title}</span>
-          {item.label && <Badge variant="secondary">{item.label}</Badge>}
+          <span>{title}</span>
+          {label && <Badge variant="secondary">{label}</Badge>}
         </CommandItem>
       )
     }
@@ -132,26 +158,33 @@ export function CommandMenu({ buttonClassName, ...props }: CommandMenuProps) {
         {...props}
       >
         <Search className="me-2 h-4 w-4" />
-        <span>Search...</span>
+        <span>{dictionary.search.search}</span>
         <Keyboard className="ms-auto">K</Keyboard>
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen} {...props}>
         <DialogTitle className="sr-only">Search Menu</DialogTitle>
-        <CommandInput placeholder="Type a command or search..." />
+        <CommandInput placeholder={dictionary.search.typeCommand} />
         <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandEmpty>{dictionary.search.noResults}</CommandEmpty>
           <ScrollArea className="h-[300px] max-h-[300px]">
-            {navigationsData.map((nav) => (
-              <CommandGroup
-                key={nav.title}
-                heading={nav.title}
-                className="[&_[cmdk-group-items]]:space-y-1"
-              >
-                {nav.items.map((item) => (
-                  <Fragment key={item.title}>{renderMenuItem(item)}</Fragment>
-                ))}
-              </CommandGroup>
-            ))}
+            {navigationsData.map((nav) => {
+              const title = getDictionaryValue(
+                titleCaseToCamelCase(nav.title),
+                dictionary.navigation
+              )
+
+              return (
+                <CommandGroup
+                  key={nav.title}
+                  heading={title}
+                  className="[&_[cmdk-group-items]]:space-y-1"
+                >
+                  {nav.items.map((item) => (
+                    <Fragment key={item.title}>{renderMenuItem(item)}</Fragment>
+                  ))}
+                </CommandGroup>
+              )
+            })}
           </ScrollArea>
         </CommandList>
       </CommandDialog>
