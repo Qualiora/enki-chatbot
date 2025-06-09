@@ -1,0 +1,22 @@
+<svg width="125" height="289" viewBox="0 0 125 289" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M100.972 89.25H30.0539L65.5129 10.9121L100.972 89.25Z" stroke="black" stroke-width="9"/>
+<rect x="14" y="85" width="105" height="9" fill="black"/>
+<rect x="119" y="103" width="105" height="10" transform="rotate(90 119 103)" fill="black"/>
+<rect x="100" y="103" width="105" height="10" transform="rotate(90 100 103)" fill="black"/>
+<rect x="81" y="158" width="105" height="10" transform="rotate(90 81 158)" fill="black"/>
+<rect x="62" y="171" width="105" height="10" transform="rotate(90 62 171)" fill="black"/>
+<rect x="43" y="184" width="105" height="10" transform="rotate(90 43 184)" fill="black"/>
+<rect x="24" y="184" width="105" height="10" transform="rotate(90 24 184)" fill="black"/>
+<rect x="33.9472" y="107.25" width="52.306" height="9" transform="rotate(120 33.9472 107.25)" fill="black"/>
+<rect x="29.6301" y="156.967" width="15.6711" height="9" transform="rotate(120 29.6301 156.967)" fill="black"/>
+<rect x="29.65" y="157" width="29.65" height="9" transform="rotate(180 29.65 157)" fill="black"/>
+<rect x="43" y="175" width="29" height="9" transform="rotate(180 43 175)" fill="black"/>
+<path d="M71 112L43 112L43 103L71 103L71 112Z" fill="black"/>
+<rect width="29" height="10.0266" transform="matrix(0.912656 0.40873 -0.419467 0.907771 9.20587 55.0687)" fill="black"/>
+<rect width="29" height="10.0266" transform="matrix(0.912656 0.40873 -0.419467 0.907771 16.9824 37.7046)" fill="black"/>
+<rect width="29" height="10.0266" transform="matrix(0.912656 0.40873 -0.419467 0.907771 24.7482 20.3641)" fill="black"/>
+<rect width="29" height="10.0266" transform="matrix(0.912656 0.40873 -0.419467 0.907771 32.5247 3)" fill="black"/>
+<rect width="29" height="10.0266" transform="matrix(-0.912656 0.40873 0.419467 0.907771 120.009 50.7046)" fill="black"/>
+<rect width="29" height="10.0266" transform="matrix(-0.912656 0.40873 0.419467 0.907771 112.243 33.3641)" fill="black"/>
+<rect width="29" height="10.0266" transform="matrix(-0.912656 0.40873 0.419467 0.907771 104.467 16)" fill="black"/>
+</svg>
