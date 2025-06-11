@@ -167,3 +167,15 @@ export type SignInFormType = z.infer<typeof SignInSchema>
 export type VerifyEmailFormType = z.infer<typeof VerifyEmailSchema>
 
 export type ComingSoonFormType = z.infer<typeof ComingSoonSchema>
+
+export interface ChatType {
+  id: string
+  title: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface GroupedChatsType {
+  sortedKeys: string[]
+  grouped: Record<string, ChatType[]>
+}

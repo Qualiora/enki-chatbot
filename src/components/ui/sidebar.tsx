@@ -256,13 +256,21 @@ export function Sidebar({
     </div>
   )
 }
-
 export function SidebarTrigger({
   className,
   onClick,
   ...props
 }: ComponentProps<typeof Button>) {
-  const { toggleSidebar } = useSidebar()
+  const { isMobile, openMobile, setOpenMobile, toggleSidebar } = useSidebar()
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    onClick?.(event)
+    if (isMobile) {
+      setOpenMobile(!openMobile)
+    } else {
+      toggleSidebar()
+    }
+  }
 
   return (
     <Button
@@ -271,10 +279,7 @@ export function SidebarTrigger({
       variant="ghost"
       size="icon"
       className={className}
-      onClick={(event) => {
-        onClick?.(event)
-        toggleSidebar()
-      }}
+      onClick={handleClick}
       {...props}
     >
       <PanelLeft className="h-4 w-4" />

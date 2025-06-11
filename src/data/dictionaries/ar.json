@@ -146,9 +146,10 @@
       "seeAllNotifications": "عرض جميع الإشعارات"
     },
     "userNav": {
-      "profile": "الملف الشخصي",
       "settings": "الإعدادات",
-      "signOut": "تسجيل الخروج"
+      "signOut": "تسجيل الخروج",
+      "HelpAndFaq": "المساعدة والأسئلة الشائعة",
+      "TermsAndPolicies": "الشروط والسياسات"
     }
   },
   "label": {

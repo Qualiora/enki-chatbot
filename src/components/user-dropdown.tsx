@@ -1,6 +1,9 @@
+"use client"
+
 import Link from "next/link"
+import { useParams } from "next/navigation"
 import { signOut } from "next-auth/react"
-import { LogOut, User, UserCog } from "lucide-react"
+import { CircleHelp, FileCheck2, LogOut, UserCog } from "lucide-react"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
 import type { LocaleType } from "@/types"
@@ -22,13 +25,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-export function UserDropdown({
-  dictionary,
-  locale,
-}: {
-  dictionary: DictionaryType
-  locale: LocaleType
-}) {
+export function UserDropdown({ dictionary }: { dictionary: DictionaryType }) {
+  const params = useParams()
+
+  const locale = params.lang as LocaleType
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -62,15 +63,7 @@ export function UserDropdown({
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuGroup className="max-w-48">
-          <DropdownMenuItem asChild>
-            <Link
-              href={ensureLocalizedPathname("/pages/account/profile", locale)}
-            >
-              <User className="me-2 size-4" />
-              {dictionary.navigation.userNav.profile}
-            </Link>
-          </DropdownMenuItem>
+        <DropdownMenuGroup>
           <DropdownMenuItem asChild>
             <Link
               href={ensureLocalizedPathname("/pages/account/settings", locale)}
@@ -81,10 +74,27 @@ export function UserDropdown({
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => signOut()}>
-          <LogOut className="me-2 size-4" />
-          {dictionary.navigation.userNav.signOut}
-        </DropdownMenuItem>
+        <DropdownMenuGroup>
+          <DropdownMenuItem asChild>
+            <Link href={ensureLocalizedPathname("/help-center", locale)}>
+              <CircleHelp className="me-2 size-4" />
+              {dictionary.navigation.userNav.HelpAndFaq}
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href={ensureLocalizedPathname("/terms-and-policies", locale)}>
+              <FileCheck2 className="me-2 size-4" />
+              {dictionary.navigation.userNav.TermsAndPolicies}
+            </Link>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem onClick={() => signOut()}>
+            <LogOut className="me-2 size-4" />
+            {dictionary.navigation.userNav.signOut}
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   )

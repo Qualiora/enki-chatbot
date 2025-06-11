@@ -148,7 +148,9 @@
     "userNav": {
       "profile": "Profile",
       "settings": "Settings",
-      "signOut": "Sign out"
+      "signOut": "Sign out",
+      "HelpAndFaq": "Help & FAQ",
+      "TermsAndPolicies": "Terms & Policies"
     }
   },
   "label": {

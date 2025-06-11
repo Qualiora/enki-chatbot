@@ -113,7 +113,7 @@ export function ChatInterface({ chatId, onChatCreated }: ChatInterfaceProps) {
   ]
 
   return (
-    <div className="flex flex-col h-full">
+    <section className="container h-full flex flex-col p-4">
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {messages.length === 0 ? (
@@ -288,6 +288,6 @@ export function ChatInterface({ chatId, onChatCreated }: ChatInterfaceProps) {
           </div>
         </div>
       </div>
-    </div>
+    </section>
   )
 }
