@@ -2,13 +2,9 @@ import type { i18n } from "@/configs/i18n"
 import type { LucideIcon, icons } from "lucide-react"
 import type { ComponentType, SVGAttributes } from "react"
 import type { z } from "zod"
+import type { models, providers } from "./configs/models"
 import type { radii, themes } from "./configs/themes"
-import type { ComingSoonSchema } from "./schemas/coming-soon-schema"
-import type { ForgotPasswordSchema } from "./schemas/forgot-passward-schema"
-import type { NewPasswordSchema } from "./schemas/new-passward-schema"
-import type { RegisterSchema } from "./schemas/register-schema"
 import type { SignInSchema } from "./schemas/sign-in-schema"
-import type { VerifyEmailSchema } from "./schemas/verify-email-schema"
 
 export type LayoutType = "vertical" | "horizontal"
 
@@ -74,99 +70,13 @@ export interface RouteType {
   exceptions?: string[]
 }
 
-export interface NotificationType {
-  unreadCount: number
-  notifications: Array<{
-    id: string
-    iconName: DynamicIconNameType
-    content: string
-    url: string
-    date: Date
-    isRead: boolean
-  }>
-}
-
-export type FormatStyleType = "percent" | "duration" | "currency" | "regular"
-
-export interface NavigationType {
-  title: string
-  items: NavigationRootItem[]
-}
-
-export type NavigationRootItem =
-  | NavigationRootItemWithHrefType
-  | NavigationRootItemWithItemsType
-
-export interface NavigationRootItemBasicType {
-  title: string
-  label?: string
-  iconName: DynamicIconNameType
-}
-
-export interface NavigationRootItemWithHrefType
-  extends NavigationRootItemBasicType {
-  href: string
-  items?: never
-}
-
-export interface NavigationRootItemWithItemsType
-  extends NavigationRootItemBasicType {
-  items: (
-    | NavigationNestedItemWithHrefType
-    | NavigationNestedItemWithItemsType
-  )[]
-  href?: never
-}
-
-export interface NavigationNestedItemBasicType {
-  title: string
-  label?: string
-}
-
-export interface NavigationNestedItemWithHrefType
-  extends NavigationNestedItemBasicType {
-  href: string
-  items?: never
-}
-
-export interface NavigationNestedItemWithItemsType
-  extends NavigationNestedItemBasicType {
-  items: (
-    | NavigationNestedItemWithHrefType
-    | NavigationNestedItemWithItemsType
-  )[]
-  href?: never
-}
-
-export type NavigationNestedItem =
-  | NavigationNestedItemWithHrefType
-  | NavigationNestedItemWithItemsType
-
 export interface OAuthLinkType {
   href: string
   label: string
   icon: IconType
 }
 
-export interface FileType {
-  id: string
-  name: string
-  size: number
-  type: string
-  url: string
-}
-
-export type ForgotPasswordFormType = z.infer<typeof ForgotPasswordSchema>
-
-export type NewPasswordFormType = z.infer<typeof NewPasswordSchema>
-
-export type RegisterFormType = z.infer<typeof RegisterSchema>
-
 export type SignInFormType = z.infer<typeof SignInSchema>
-
-export type VerifyEmailFormType = z.infer<typeof VerifyEmailSchema>
-
-export type ComingSoonFormType = z.infer<typeof ComingSoonSchema>
 
 export interface ChatType {
   id: string
@@ -178,4 +88,29 @@ export interface ChatType {
 export interface GroupedChatsType {
   sortedKeys: string[]
   grouped: Record<string, ChatType[]>
+}
+
+export type ModelType = (typeof models)[number]
+
+export type ProviderType = (typeof providers)[number]
+
+export interface ModelConfigType {
+  modelId: string
+  provider: ProviderType
+  headerKey: string
+}
+
+export interface ModelContextType {
+  selectedModel: ModelType
+  updateModel: (model: ModelType) => void
+  getModelConfig: () => ModelConfigType
+}
+
+export type ApiKeysType = Record<ProviderType, string>
+
+export interface ApiKeyContextType {
+  keys: ApiKeysType
+  updateKeys: (newKeys: Partial<ApiKeysType>) => void
+  hasRequiredKeys: () => boolean
+  getKey: (provider: ProviderType) => string | null
 }

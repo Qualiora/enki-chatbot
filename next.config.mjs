@@ -11,7 +11,7 @@ const nextConfig = {
       // to prevent Next.js from incorrectly matching static routes as dynamic parameters.
       // For example, if "/:lang" comes before "/docs", Next.js may treat "docs" as a language.
       {
-        source: "/",
+        source: "/:lang/chat",
         destination: process.env.HOMEPAGE,
         permanent: true,
       },

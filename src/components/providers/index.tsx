@@ -2,6 +2,8 @@ import type { DirectionType, LocaleType } from "@/types"
 import type { Session } from "next-auth"
 import type { ReactNode } from "react"
 
+import { ApiKeyProvider } from "@/contexts/api-key-context"
+import { ModelProvider } from "@/contexts/model-context"
 import { SettingsProvider } from "@/contexts/settings-context"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { DirectionProvider } from "./direction-provider"
@@ -26,7 +28,11 @@ export function Providers({
         <ThemeProvider>
           <DirectionProvider direction={direction}>
             <NextAuthProvider session={session}>
-              <SidebarProvider>{children}</SidebarProvider>
+              <ModelProvider>
+                <ApiKeyProvider>
+                  <SidebarProvider>{children}</SidebarProvider>
+                </ApiKeyProvider>
+              </ModelProvider>
             </NextAuthProvider>
           </DirectionProvider>
         </ThemeProvider>
