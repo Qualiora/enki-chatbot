@@ -126,6 +126,9 @@ function ThreadPromptForm({
             </CardContent>
           </form>
         </Card>
+        <p className="text-muted-foreground text-xs text-center p-2">
+          AI can make mistakes. Check important info.
+        </p>
       </div>
     </Form>
   )
@@ -252,9 +255,6 @@ export function Thread({
         isLoading={isLoading}
         onStop={stop}
       />
-      <p className="text-muted-foreground text-xs p-2">
-        AI can make mistakes. Check important info.
-      </p>
     </section>
   )
 }
