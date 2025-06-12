@@ -1,6 +1,5 @@
 "use client"
 
-import { useRef } from "react"
 import { useChat } from "@ai-sdk/react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -26,25 +25,25 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Textarea } from "@/components/ui/textarea"
 import { ModelDropdown } from "@/components/model-dropdown"
 
-const promptSchema = z.object({
+const InputSchema = z.object({
   message: z.string().min(1, "Message cannot be empty").trim(),
 })
 
-type PromptFormData = z.infer<typeof promptSchema>
+type InputFormData = z.infer<typeof InputSchema>
 
-interface ThreadPromptFormProps {
+interface ThreadInputFormProps {
   onSubmit: (message: string) => void
   isLoading: boolean
   onStop: () => void
 }
 
-function ThreadPromptForm({
+function ThreadInputForm({
   onSubmit,
   isLoading,
   onStop,
-}: ThreadPromptFormProps) {
-  const form = useForm<PromptFormData>({
-    resolver: zodResolver(promptSchema),
+}: ThreadInputFormProps) {
+  const form = useForm<InputFormData>({
+    resolver: zodResolver(InputSchema),
     defaultValues: {
       message: "",
     },
@@ -54,7 +53,7 @@ function ThreadPromptForm({
   const { isValid } = form.formState
   const isDisabled = !isValid // Disable button if form is invalid
 
-  const handleSubmit = (data: PromptFormData) => {
+  const handleSubmit = (data: InputFormData) => {
     if (isLoading) return
     onSubmit(data.message)
     form.reset()
@@ -82,7 +81,8 @@ function ThreadPromptForm({
                 render={({ field }) => (
                   <FormItem className="flex-1">
                     <FormLabel className="sr-only">
-                      Press Enter to send, Shift + Enter for new
+                      Chat Input. Press Enter to send, Shift + Enter for new
+                      line.
                     </FormLabel>
                     <FormControl>
                       <ScrollArea className="max-h-56 rounded-md has-focus-visible:ring-1 has-focus-visible:ring-ring">
@@ -94,7 +94,7 @@ function ThreadPromptForm({
                           disabled={isLoading}
                           onKeyDown={handleKeyDown}
                           spellCheck="false"
-                          autoComplete="false"
+                          autoComplete="off"
                         />
                       </ScrollArea>
                     </FormControl>
@@ -153,7 +153,7 @@ export function Thread({
     },
   })
 
-  const handlePromptSubmit = (message: string) => {
+  const handleInputSubmit = (message: string) => {
     append({
       role: "user",
       content: message,
@@ -163,30 +163,27 @@ export function Thread({
   const isLoading = status === "streaming"
 
   return (
-    <section className="flex flex-col justify-between items-center h-full">
-      {/* Messages Area */}
-      <div className="w-full flex flex-col min-h-0">
+    <section className="h-full flex flex-col justify-between items-center">
+      <ul
+        className="w-full flex flex-col min-h-0"
+        aria-roledescription="chat messages"
+      >
         <ScrollArea className="flex-1">
           <div className="container max-w-3xl pt-8 pb-12">
             {messages.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Bot className="h-8 w-8 text-primary" />
-                </div>
-                <div className="space-y-2">
-                  <h3 className="text-lg font-semibold">
-                    Start a conversation
-                  </h3>
-                  <p className="text-muted-foreground max-w-md">
-                    Ask me anything! I&apos;m powered by {selectedModel} and
-                    ready to help.
-                  </p>
-                </div>
+              <div className="h-[calc(100vh-18rem)] flex flex-col justify-center items-center text-center space-y-1.5">
+                <h1 className="text-4xl font-semibold leading-none">
+                  What can I help with?
+                </h1>
+                <p className="text-muted-foreground text-sm max-w-prose">
+                  Ask me anything! I&apos;m powered by {selectedModel} and ready
+                  to help.
+                </p>
               </div>
             ) : (
               <div className="space-y-4">
                 {messages.map((message) => (
-                  <div
+                  <li
                     key={message.id}
                     className={`flex gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}
                   >
@@ -219,7 +216,7 @@ export function Thread({
                         </AvatarFallback>
                       </Avatar>
                     )}
-                  </div>
+                  </li>
                 ))}
 
                 {isLoading && (
@@ -249,9 +246,10 @@ export function Thread({
             )}
           </div>
         </ScrollArea>
-      </div>
-      <ThreadPromptForm
-        onSubmit={handlePromptSubmit}
+      </ul>
+
+      <ThreadInputForm
+        onSubmit={handleInputSubmit}
         isLoading={isLoading}
         onStop={stop}
       />
