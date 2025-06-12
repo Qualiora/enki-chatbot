@@ -1,18 +1,20 @@
 "use client"
 
+import { useRef } from "react"
 import { useChat } from "@ai-sdk/react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
-import { Bot, Send, Square, User } from "lucide-react"
+import { Bot, Paperclip, Send, Square, User } from "lucide-react"
 
 import type { UIMessage } from "ai"
 
+import { useAutogrowingTextarea } from "@/hooks/use-autogrowing-textarea"
 import { useModel } from "@/hooks/use-model"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import {
   Form,
   FormControl,
@@ -47,6 +49,7 @@ function ThreadPromptForm({
       message: "",
     },
   })
+  const { textareaRef } = useAutogrowingTextarea()
 
   const { isValid } = form.formState
   const isDisabled = !isValid // Disable button if form is invalid
@@ -66,43 +69,64 @@ function ThreadPromptForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="flex gap-2">
-        <FormField
-          control={form.control}
-          name="message"
-          render={({ field }) => (
-            <FormItem className="flex-1">
-              <FormLabel className="sr-only">
-                Press Enter to send, Shift + Enter for new
-              </FormLabel>
-              <FormControl>
-                <Textarea
-                  {...field}
-                  placeholder="Type your message here..."
-                  disabled={isLoading}
-                  className="resize-none"
-                  onKeyDown={handleKeyDown}
-                  spellCheck="false"
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <Button
-          size="icon"
-          type="submit"
-          disabled={isDisabled}
-          onClick={() => isLoading && onStop()}
-          aria-live="assertive"
-        >
-          {isLoading ? (
-            <Square className="h-4 w-4" />
-          ) : (
-            <Send className="h-4 w-4" />
-          )}
-          <span className="sr-only">{isLoading ? "Loading" : "Send"}</span>
-        </Button>
-      </form>
+      <div className="container max-w-3xl p-0 z-10">
+        <Card asChild>
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="mx-4 -mt-4"
+          >
+            <CardHeader className="p-3">
+              <FormField
+                control={form.control}
+                name="message"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel className="sr-only">
+                      Press Enter to send, Shift + Enter for new
+                    </FormLabel>
+                    <FormControl>
+                      <ScrollArea className="max-h-56 rounded-md has-focus-visible:ring-1 has-focus-visible:ring-ring">
+                        <Textarea
+                          {...field}
+                          ref={textareaRef}
+                          placeholder="Type your message here..."
+                          className="focus-visible:ring-0"
+                          disabled={isLoading}
+                          onKeyDown={handleKeyDown}
+                          spellCheck="false"
+                          autoComplete="false"
+                        />
+                      </ScrollArea>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </CardHeader>
+            <CardContent className="flex justify-end gap-2 p-3 pt-0">
+              <ModelDropdown />
+              <Button variant="outline" size="icon">
+                <Paperclip className="h-4 w-4" />
+              </Button>
+              <Button
+                size="icon"
+                type="submit"
+                disabled={isDisabled}
+                onClick={() => isLoading && onStop()}
+                aria-live="assertive"
+              >
+                {isLoading ? (
+                  <Square className="h-4 w-4" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
+                <span className="sr-only">
+                  {isLoading ? "Loading" : "Send"}
+                </span>
+              </Button>
+            </CardContent>
+          </form>
+        </Card>
+      </div>
     </Form>
   )
 }
@@ -136,97 +160,101 @@ export function Thread({
   const isLoading = status === "streaming"
 
   return (
-    <section className="container h-full p-4">
-      <ModelDropdown />
-
+    <section className="flex flex-col justify-between items-center h-full">
       {/* Messages Area */}
-      <div className="flex-1 flex flex-col min-h-0 py-4">
-        <ScrollArea className="flex-1 pr-4">
-          {messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                <Bot className="h-8 w-8 text-primary" />
+      <div className="w-full flex flex-col min-h-0">
+        <ScrollArea className="flex-1">
+          <div className="container max-w-3xl pt-8 pb-12">
+            {messages.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Bot className="h-8 w-8 text-primary" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold">
+                    Start a conversation
+                  </h3>
+                  <p className="text-muted-foreground max-w-md">
+                    Ask me anything! I&apos;m powered by {selectedModel} and
+                    ready to help.
+                  </p>
+                </div>
               </div>
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold">Start a conversation</h3>
-                <p className="text-muted-foreground max-w-md">
-                  Ask me anything! I&apos;m powered by {selectedModel} and ready
-                  to help.
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}
-                >
-                  {message.role === "assistant" && (
+            ) : (
+              <div className="space-y-4">
+                {messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`flex gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}
+                  >
+                    {message.role === "assistant" && (
+                      <Avatar className="h-8 w-8 mt-1">
+                        <AvatarFallback className="bg-primary text-primary-foreground">
+                          <Bot className="h-4 w-4" />
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
+
+                    <Card
+                      className={`max-w-[80%] ${
+                        message.role === "user"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted"
+                      }`}
+                    >
+                      <CardContent className="p-3">
+                        <div className="whitespace-pre-wrap text-sm leading-relaxed">
+                          {message.content}
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {message.role === "user" && (
+                      <Avatar className="h-8 w-8 mt-1">
+                        <AvatarFallback className="bg-secondary">
+                          <User className="h-4 w-4" />
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
+                  </div>
+                ))}
+
+                {isLoading && (
+                  <div className="flex gap-3 justify-start">
                     <Avatar className="h-8 w-8 mt-1">
                       <AvatarFallback className="bg-primary text-primary-foreground">
                         <Bot className="h-4 w-4" />
                       </AvatarFallback>
                     </Avatar>
-                  )}
-
-                  <Card
-                    className={`max-w-[80%] ${
-                      message.role === "user"
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted"
-                    }`}
-                  >
-                    <CardContent className="p-3">
-                      <div className="whitespace-pre-wrap text-sm leading-relaxed">
-                        {message.content}
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {message.role === "user" && (
-                    <Avatar className="h-8 w-8 mt-1">
-                      <AvatarFallback className="bg-secondary">
-                        <User className="h-4 w-4" />
-                      </AvatarFallback>
-                    </Avatar>
-                  )}
-                </div>
-              ))}
-
-              {isLoading && (
-                <div className="flex gap-3 justify-start">
-                  <Avatar className="h-8 w-8 mt-1">
-                    <AvatarFallback className="bg-primary text-primary-foreground">
-                      <Bot className="h-4 w-4" />
-                    </AvatarFallback>
-                  </Avatar>
-                  <Card className="bg-muted">
-                    <CardContent className="p-3">
-                      <div className="flex items-center gap-2">
-                        <div className="flex space-x-1">
-                          <div className="w-2 h-2 bg-current rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                          <div className="w-2 h-2 bg-current rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                          <div className="w-2 h-2 bg-current rounded-full animate-bounce"></div>
+                    <Card className="bg-muted">
+                      <CardContent className="p-3">
+                        <div className="flex items-center gap-2">
+                          <div className="flex space-x-1">
+                            <div className="w-2 h-2 bg-current rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                            <div className="w-2 h-2 bg-current rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                            <div className="w-2 h-2 bg-current rounded-full animate-bounce"></div>
+                          </div>
+                          <span className="text-xs text-muted-foreground">
+                            Thinking...
+                          </span>
                         </div>
-                        <span className="text-xs text-muted-foreground">
-                          Thinking...
-                        </span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
-            </div>
-          )}
+                      </CardContent>
+                    </Card>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </ScrollArea>
       </div>
-
       <ThreadPromptForm
         onSubmit={handlePromptSubmit}
         isLoading={isLoading}
         onStop={stop}
       />
+      <p className="text-muted-foreground text-xs p-2">
+        AI can make mistakes. Check important info.
+      </p>
     </section>
   )
 }

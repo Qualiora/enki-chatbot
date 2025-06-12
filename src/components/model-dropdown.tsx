@@ -38,7 +38,7 @@ export function ModelDropdown() {
       onValueChange={handleSelectModel}
       defaultValue={selectedModel}
     >
-      <SelectTrigger>
+      <SelectTrigger className="max-w-44 me-auto">
         <SelectValue placeholder="Select model" />
       </SelectTrigger>
       <SelectContent>
