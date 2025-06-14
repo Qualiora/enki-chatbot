@@ -111,6 +111,6 @@ export type ApiKeysType = Record<ProviderType, string>
 export interface ApiKeyContextType {
   keys: ApiKeysType
   updateKeys: (newKeys: Partial<ApiKeysType>) => void
-  hasRequiredKeys: () => boolean
+  hasRequiredKeys: boolean
   getKey: (provider: ProviderType) => string | null
 }

@@ -34,7 +34,7 @@ export function Sidebar({
 }) {
   const params = useParams()
 
-  const threadId = params.chat?.[1]
+  const threadId = params.threadId
   const locale = params.lang as LocaleType
   const direction = i18n.localeDirection[locale]
   const isRTL = direction === "rtl"

@@ -40,7 +40,7 @@ export function CommandMenu({
   const params = useParams()
   const router = useRouter()
 
-  const threadId = params.chat?.[1]
+  const threadId = params.threadId
   const locale = params.lang as LocaleType
 
   useEffect(() => {

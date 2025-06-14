@@ -21,7 +21,7 @@ export function Layout({
       <Sidebar dictionary={dictionary} chatsGrouped={chatsGrouped} />
       <div className="w-full">
         <Header dictionary={dictionary} />
-        <main className="h-[calc(100svh-3.525rem)] bg-muted/50">
+        <main className="h-[calc(100svh-3.525rem)] bg-muted/40">
           {children}
         </main>
       </div>

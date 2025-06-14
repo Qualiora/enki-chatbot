@@ -5,7 +5,7 @@ import type { ModelType } from "@/types"
 import { models } from "@/configs/models"
 import { getModelConfig } from "@/lib/models"
 
-import { useAPIKeys } from "@/hooks/use-api-key"
+import { useApiKey } from "@/hooks/use-api-key"
 import { useModel } from "@/hooks/use-model"
 import {
   Select,
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select"
 
 export function ModelDropdown() {
-  const { getKey } = useAPIKeys()
+  const { getKey } = useApiKey()
   const { selectedModel, updateModel } = useModel()
 
   const isModelEnabled = useCallback(

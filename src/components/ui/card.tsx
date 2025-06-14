@@ -65,7 +65,7 @@ export function CardDescription({
 export function CardContent({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
-      data-slot="card-action"
+      data-slot="card-content"
       className={cn("p-6 pt-0", className)}
       {...props}
     />
@@ -75,7 +75,7 @@ export function CardContent({ className, ...props }: ComponentProps<"div">) {
 export function CardFooter({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
-      data-slot="card-content"
+      data-slot="card-footer"
       className={cn("flex items-center p-6 pt-0", className)}
       {...props}
     />

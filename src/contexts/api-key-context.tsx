@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useCallback, useEffect, useState } from "react"
+import { createContext, useCallback, useEffect, useMemo, useState } from "react"
 
 import type { ApiKeyContextType, ApiKeysType, ProviderType } from "@/types"
 import type { ReactNode } from "react"
@@ -20,11 +20,7 @@ export const ApiKeyContext = createContext<ApiKeyContextType | undefined>(
 export function ApiKeyProvider({ children }: { children: ReactNode }) {
   const [keys, setKeysState] = useState<ApiKeysType>(() => {
     const stored = localStorage.getItem(STORAGE_KEY)
-    try {
-      return stored ? (JSON.parse(stored) as ApiKeysType) : defaultKeys
-    } catch {
-      return defaultKeys
-    }
+    return stored ? (JSON.parse(stored) as ApiKeysType) : defaultKeys
   })
 
   const updateKeys = useCallback((newKeys: Partial<ApiKeysType>) => {
@@ -42,19 +38,22 @@ export function ApiKeyProvider({ children }: { children: ReactNode }) {
     [keys]
   )
 
-  const hasRequiredKeys = useCallback(() => {
-    return Boolean(keys.google) // Match Zustand logic
+  const hasRequiredKeys = useMemo(() => {
+    return Object.values(keys).some((key) => key !== "")
   }, [keys])
 
-  // Cross-tab sync
   useEffect(() => {
     const handleStorage = (e: StorageEvent) => {
       if (e.key === STORAGE_KEY && e.newValue) {
         try {
           const updatedKeys = JSON.parse(e.newValue) as ApiKeysType
           setKeysState(updatedKeys)
-        } catch {
-          // Ignore malformed JSON
+        } catch (error) {
+          console.error(
+            "Failed to parse updated storage value:",
+            error,
+            e.newValue
+          )
         }
       }
     }
