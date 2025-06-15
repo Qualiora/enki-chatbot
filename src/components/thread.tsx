@@ -7,9 +7,11 @@ import type { UIMessage } from "ai"
 
 import { ChatSDKError } from "@/lib/errors"
 
+import { useApiKey } from "@/hooks/use-api-key"
 import { useModel } from "@/hooks/use-model"
 import { ThreadInputForm } from "@/components/thread-input-form"
 import { ThreadMessageList } from "@/components/thread-messages"
+import { ApiKeysRequiredAlert } from "./api-keys-required-alert"
 
 export function Thread({
   threadId,
@@ -19,6 +21,8 @@ export function Thread({
   initialMessages: UIMessage[]
 }) {
   const { selectedModel } = useModel()
+  const { hasRequiredKeys } = useApiKey()
+
   const { id, messages, setMessages, status, append, stop, reload } = useChat({
     id: threadId,
     initialMessages,
@@ -44,12 +48,16 @@ export function Thread({
         reload={reload}
         stop={stop}
       />
-      <ThreadInputForm
-        threadId={id}
-        append={append}
-        status={status}
-        onStop={stop}
-      />
+      {hasRequiredKeys ? (
+        <ThreadInputForm
+          threadId={id}
+          append={append}
+          status={status}
+          onStop={stop}
+        />
+      ) : (
+        <ApiKeysRequiredAlert />
+      )}
     </section>
   )
 }
