@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/form"
 import { ModelDropdown } from "@/components/model-dropdown"
 import { ThreadInput } from "@/components/thread-input"
+import KeyPrompt from "./key-prompt"
 
 const ThreadInputSchema = z.object({
   message: z.string().min(1, "Message cannot be empty").trim(),
@@ -54,6 +55,10 @@ export function ThreadInputForm({
       message: "",
     },
   })
+
+  if (!hasRequiredKeys) {
+    return <KeyPrompt />
+  }
 
   const locale = params.lang as LocaleType
   const { isValid } = form.formState
