@@ -20,7 +20,7 @@ export function ApiKeysRequiredAlert() {
   return (
     <Alert
       role="alert"
-      className="fixed bottom-6 z-40 w-fit flex items-center gap-4  "
+      className="fixed bottom-6 z-40 w-fit flex items-center gap-4"
     >
       <Badge className="aspect-square">
         <Key className="size-full" />
