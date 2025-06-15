@@ -56,7 +56,7 @@ export function UserDropdown({ dictionary }: { dictionary: DictionaryType }) {
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col overflow-hidden">
-            <p className="text-sm font-medium truncate">John Doe</p>
+            <p className="text-sm font-medium truncate">{userData?.name}</p>
             <p className="text-xs text-muted-foreground font-semibold truncate">
               {userData?.email}
             </p>
@@ -65,9 +65,7 @@ export function UserDropdown({ dictionary }: { dictionary: DictionaryType }) {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link
-              href={ensureLocalizedPathname("/pages/account/settings", locale)}
-            >
+            <Link href={ensureLocalizedPathname("/settings", locale)}>
               <UserCog className="me-2 size-4" />
               {dictionary.navigation.userNav.settings}
             </Link>
