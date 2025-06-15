@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { Plus } from "lucide-react"
@@ -41,16 +40,9 @@ export function Sidebar({
 
   return (
     <SidebarWrapper side={isRTL ? "right" : "left"}>
-      <SidebarHeader className="border-b">
-        <Link href="/" className="w-fit flex items-center">
-          <Image
-            src="/images/icons/enki-chatbot.svg"
-            alt=""
-            height={36}
-            width={36}
-            className="h-9 w-9 dark:invert"
-          />
-          <span className="font-semibold text-lg">Enki Chatbot</span>
+      <SidebarHeader className="py-3 border-b">
+        <Link href="/" className="w-fit font-semibold text-xl mx-auto">
+          Enki Chatbot
         </Link>
         <Link href="/chat" className={buttonVariants({ size: "lg" })}>
           <Plus className="me-2 w-4 h-4" />

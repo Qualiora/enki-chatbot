@@ -19,8 +19,8 @@ import { Providers } from "@/components/providers"
 // More info: https://nextjs.org/docs/app/building-your-application/optimizing/metadata
 export const metadata: Metadata = {
   title: {
-    template: "%s | Shadboard",
-    default: "Shadboard",
+    template: "%s | Enki Chatbot",
+    default: "Enki Chatbot",
   },
   description:
     "Chat with multiple AI models including GPT-4, Claude, and Gemini",
