@@ -4,6 +4,7 @@ import { twMerge } from "tailwind-merge"
 import { z } from "zod"
 
 import type { FormatStyleType, LocaleType } from "@/types"
+import type { CoreAssistantMessage } from "ai"
 import type { ClassValue } from "clsx"
 
 export function cn(...inputs: ClassValue[]) {
@@ -339,4 +340,16 @@ export function getDictionaryValue(
   }
 
   return value
+}
+
+export function getTrailingMessageId({
+  messages,
+}: {
+  messages: Array<CoreAssistantMessage & { id?: string }>
+}) {
+  const trailingMessage = messages.at(-1)
+
+  if (!trailingMessage) return null
+
+  return trailingMessage.id
 }
