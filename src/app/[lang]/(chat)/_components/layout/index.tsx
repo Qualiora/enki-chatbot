@@ -6,7 +6,7 @@ import { Header } from "@/app/[lang]/(chat)/_components/layout/header"
 import { Sidebar } from "@/app/[lang]/(chat)/_components/layout/sidebar"
 import { Customizer } from "@/components/customizer"
 
-export function Layout({
+export function ChatLayout({
   children,
   dictionary,
   chatsGrouped,

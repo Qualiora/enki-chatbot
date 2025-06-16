@@ -46,12 +46,12 @@ export async function middleware(request: NextRequest) {
 
     // Redirect authenticated users away from guest routes
     if (isAuthenticated && isGuest) {
-      return redirect(process.env.HOMEPAGE || "/", request)
+      return redirect(process.env.HOMEPAGE!, request)
     }
 
-    // Redirect unauthenticated users from protected routes to sign-in
+    // Redirect unauthenticated users from protected routes to auth
     if (!isAuthenticated && isProtected) {
-      let redirectPathname = "/sign-in"
+      let redirectPathname = process.env.AUTH_PATH!
 
       // Maintain the original path for redirection
       if (pathnameWithoutLocale !== "") {

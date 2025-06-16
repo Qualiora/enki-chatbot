@@ -1,10 +1,8 @@
 import type { i18n } from "@/configs/i18n"
 import type { LucideIcon, icons } from "lucide-react"
 import type { ComponentType, SVGAttributes } from "react"
-import type { z } from "zod"
 import type { models, providers } from "./configs/models"
 import type { radii, themes } from "./configs/themes"
-import type { SignInSchema } from "./schemas/sign-in-schema"
 
 export type LayoutType = "vertical" | "horizontal"
 
@@ -75,8 +73,6 @@ export interface OAuthLinkType {
   label: string
   icon: IconType
 }
-
-export type SignInFormType = z.infer<typeof SignInSchema>
 
 export interface ChatType {
   id: string

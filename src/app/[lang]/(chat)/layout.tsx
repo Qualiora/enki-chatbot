@@ -11,7 +11,7 @@ import type { ReactNode } from "react"
 
 import { getDictionary } from "@/lib/get-dictionary"
 
-import { Layout } from "@/app/[lang]/(chat)/_components/layout"
+import { ChatLayout } from "@/app/[lang]/(chat)/_components/layout"
 
 function getDateGroupLabel(date: Date): string {
   if (isToday(date)) return "Today"
@@ -70,7 +70,7 @@ export async function getChatsGrouped(): Promise<GroupedChatsType | undefined> {
   }
 }
 
-export default async function DashboardLayout(props: {
+export default async function Layout(props: {
   children: ReactNode
   params: Promise<{ lang: LocaleType }>
 }) {
@@ -82,8 +82,8 @@ export default async function DashboardLayout(props: {
   const chatsGrouped = await getChatsGrouped()
 
   return (
-    <Layout dictionary={dictionary} chatsGrouped={chatsGrouped}>
+    <ChatLayout dictionary={dictionary} chatsGrouped={chatsGrouped}>
       {children}
-    </Layout>
+    </ChatLayout>
   )
 }

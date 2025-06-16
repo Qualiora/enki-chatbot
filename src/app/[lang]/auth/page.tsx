@@ -3,17 +3,17 @@ import type { Metadata } from "next"
 
 import { getDictionary } from "@/lib/get-dictionary"
 
-import { SignIn } from "@/app/[lang]/auth/_components/sign-in"
+import { Auth } from "@/app/[lang]/auth/_components/auth"
 
 export const metadata: Metadata = {
   title: "Auth",
 }
 
-export default async function SignInPage(props: {
+export default async function AuthPage(props: {
   params: Promise<{ lang: LocaleType }>
 }) {
   const params = await props.params
   const dictionary = await getDictionary(params.lang)
 
-  return <SignIn dictionary={dictionary} />
+  return <Auth dictionary={dictionary} />
 }

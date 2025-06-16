@@ -22,6 +22,7 @@ import {
   SidebarMenuItem,
   Sidebar as SidebarWrapper,
 } from "@/components/ui/sidebar"
+import { Logo } from "@/components/logo"
 import { CommandMenu } from "./command-menu"
 
 export function Sidebar({
@@ -41,9 +42,7 @@ export function Sidebar({
   return (
     <SidebarWrapper side={isRTL ? "right" : "left"}>
       <SidebarHeader className="py-3 border-b">
-        <Link href="/" className="w-fit font-semibold text-xl mx-auto">
-          Enki Chatbot
-        </Link>
+        <Logo className="mx-auto" />
         <Link href="/chat" className={buttonVariants({ size: "lg" })}>
           <Plus className="me-2 w-4 h-4" />
           <span>New Chat</span>
