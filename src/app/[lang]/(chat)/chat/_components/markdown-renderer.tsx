@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils"
 
 import { useIsDarkMode } from "@/hooks/use-mode"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { CopyToClipboard } from "./copy-to-clipboard"
+import { CopyToClipboard } from "../../../../../components/copy-to-clipboard"
 
 type CodeBlockProps = ComponentProps<"code"> & ExtraProps
 

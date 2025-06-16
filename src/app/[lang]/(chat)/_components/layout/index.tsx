@@ -2,9 +2,9 @@ import type { DictionaryType } from "@/lib/get-dictionary"
 import type { GroupedChatsType } from "@/types"
 import type { ReactNode } from "react"
 
+import { Header } from "@/app/[lang]/(chat)/_components/layout/header"
+import { Sidebar } from "@/app/[lang]/(chat)/_components/layout/sidebar"
 import { Customizer } from "@/components/customizer"
-import { Header } from "@/components/layout/header"
-import { Sidebar } from "@/components/layout/sidebar"
 
 export function Layout({
   children,

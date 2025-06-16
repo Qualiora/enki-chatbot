@@ -10,7 +10,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
-import { MarkdownRenderer } from "@/components/markdown-renderer"
+import { MarkdownRenderer } from "@/app/[lang]/(chat)/chat/_components/markdown-renderer"
 
 export const ThreadMessageReasoning = memo(
   ({ reasoning, id }: { reasoning: string; id: string }) => {

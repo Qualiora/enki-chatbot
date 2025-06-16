@@ -14,13 +14,13 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   ThreadMessageActionsAssistent,
   ThreadMessageActionsUser,
-} from "@/components/thread-message-actions"
-import { ThreadMessageEditForm } from "@/components/thread-message-edit-form"
-import { ThreadMessageReasoning } from "@/components/thread-message-reasoning"
+} from "@/app/[lang]/(chat)/chat/_components/thread-message-actions"
+import { ThreadMessageEditForm } from "@/app/[lang]/(chat)/chat/_components/thread-message-edit-form"
+import { ThreadMessageReasoning } from "@/app/[lang]/(chat)/chat/_components/thread-message-reasoning"
 import {
   ThreadMessageTextAssistant,
   ThreadMessageTextUser,
-} from "@/components/thread-message-text"
+} from "@/app/[lang]/(chat)/chat/_components/thread-message-text"
 
 function ThreadMessageItemUser({
   message,

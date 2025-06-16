@@ -19,7 +19,7 @@ import {
   FormItem,
   FormLabel,
 } from "@/components/ui/form"
-import { ThreadInput } from "@/components/thread-input"
+import { ThreadInput } from "@/app/[lang]/(chat)/chat/_components/thread-input"
 
 const ThreadMessageEditSchema = z.object({
   message: z.string().min(1, "Message cannot be empty").trim(),

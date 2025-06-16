@@ -2,7 +2,7 @@
 
 import { memo } from "react"
 
-import { MarkdownRenderer } from "@/components/markdown-renderer"
+import { MarkdownRenderer } from "@/app/[lang]/(chat)/chat/_components/markdown-renderer"
 
 export const ThreadMessageTextUser = memo(
   ({ content }: { content: string }) => {

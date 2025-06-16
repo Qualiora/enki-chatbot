@@ -11,7 +11,7 @@ import type { ReactNode } from "react"
 
 import { getDictionary } from "@/lib/get-dictionary"
 
-import { Layout } from "@/components/layout"
+import { Layout } from "@/app/[lang]/(chat)/_components/layout"
 
 function getDateGroupLabel(date: Date): string {
   if (isToday(date)) return "Today"

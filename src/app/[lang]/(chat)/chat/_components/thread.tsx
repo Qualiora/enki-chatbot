@@ -9,9 +9,9 @@ import { ChatSDKError } from "@/lib/errors"
 
 import { useApiKey } from "@/hooks/use-api-key"
 import { useModel } from "@/hooks/use-model"
-import { ThreadInputForm } from "@/components/thread-input-form"
-import { ThreadMessageList } from "@/components/thread-messages"
-import { ApiKeysRequiredAlert } from "./api-keys-required-alert"
+import { ApiKeysRequiredAlert } from "@/app/[lang]/(chat)/chat/_components/api-keys-required-alert"
+import { ThreadInputForm } from "@/app/[lang]/(chat)/chat/_components/thread-input-form"
+import { ThreadMessageList } from "@/app/[lang]/(chat)/chat/_components/thread-messages"
 
 export function Thread({
   threadId,
@@ -31,7 +31,7 @@ export function Thread({
     },
     onError: (error) => {
       if (error instanceof ChatSDKError) {
-        toast(error.message)
+        toast.error(error.message)
       }
     },
   })

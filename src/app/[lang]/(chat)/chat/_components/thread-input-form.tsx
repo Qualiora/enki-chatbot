@@ -23,8 +23,8 @@ import {
   FormItem,
   FormLabel,
 } from "@/components/ui/form"
-import { ModelDropdown } from "@/components/model-dropdown"
-import { ThreadInput } from "@/components/thread-input"
+import { ModelDropdown } from "@/app/[lang]/(chat)/chat/_components/model-dropdown"
+import { ThreadInput } from "@/app/[lang]/(chat)/chat/_components/thread-input"
 
 const ThreadInputSchema = z.object({
   message: z.string().min(1, "Message cannot be empty").trim(),

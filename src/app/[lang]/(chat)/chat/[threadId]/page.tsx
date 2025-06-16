@@ -1,6 +1,6 @@
 import type { UIMessage } from "ai"
 
-import { Thread } from "@/components/thread"
+import { Thread } from "@/app/[lang]/(chat)/chat/_components/thread"
 
 export default async function ChatPage(props: {
   params: Promise<{ threadId: string }>

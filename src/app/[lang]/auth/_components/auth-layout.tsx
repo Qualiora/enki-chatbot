@@ -11,7 +11,7 @@ import type { ComponentProps } from "react"
 import { ensureLocalizedPathname } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 
-import { LanguageDropdown } from "../language-dropdown"
+import { LanguageDropdown } from "@/components/language-dropdown"
 
 interface AuthProps extends ComponentProps<"div"> {
   imgSrc?: string
