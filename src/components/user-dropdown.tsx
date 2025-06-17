@@ -8,11 +8,10 @@ import { CircleHelp, FileCheck2, LogOut, UserCog } from "lucide-react"
 import type { DictionaryType } from "@/lib/get-dictionary"
 import type { LocaleType } from "@/types"
 
-import { userData } from "@/data/user"
-
 import { ensureLocalizedPathname } from "@/lib/i18n"
 import { getInitials } from "@/lib/utils"
 
+import { useUserInfo } from "@/hooks/useUserInfo"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -24,9 +23,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export function UserDropdown({ dictionary }: { dictionary: DictionaryType }) {
   const params = useParams()
+  const { user, isLoading } = useUserInfo()
 
   const locale = params.lang as LocaleType
 
@@ -40,27 +41,46 @@ export function UserDropdown({ dictionary }: { dictionary: DictionaryType }) {
           aria-label="User"
         >
           <Avatar className="size-9">
-            <AvatarImage src={userData?.avatar} alt="" />
-            <AvatarFallback className="bg-transparent">
-              {userData?.name && getInitials(userData.name)}
-            </AvatarFallback>
+            {isLoading ? (
+              <Skeleton className="size-full rounded-lg" />
+            ) : (
+              <>
+                <AvatarImage src={user?.image ?? undefined} alt="User Avatar" />
+                <AvatarFallback className="bg-transparent">
+                  {user?.name && getInitials(user?.name)}
+                </AvatarFallback>
+              </>
+            )}
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" forceMount>
+      <DropdownMenuContent align="end" forceMount className="w-56">
         <DropdownMenuLabel className="flex gap-2">
           <Avatar>
-            <AvatarImage src={userData?.avatar} alt="Avatar" />
-            <AvatarFallback className="bg-transparent">
-              {userData?.name && getInitials(userData.name)}
-            </AvatarFallback>
+            {isLoading ? (
+              <Skeleton className="size-full rounded-lg" />
+            ) : (
+              <>
+                <AvatarImage src={user?.image ?? undefined} alt="User Avatar" />
+                <AvatarFallback className="bg-transparent">
+                  {user?.name && getInitials(user?.name)}
+                </AvatarFallback>
+              </>
+            )}
           </Avatar>
-          <div className="flex flex-col overflow-hidden">
-            <p className="text-sm font-medium truncate">{userData?.name}</p>
-            <p className="text-xs text-muted-foreground font-semibold truncate">
-              {userData?.email}
-            </p>
-          </div>
+          {isLoading ? (
+            <div className="flex flex-col gap-1 overflow-hidden">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-3 w-32" />
+            </div>
+          ) : (
+            <div className="flex flex-col overflow-hidden">
+              <p className="text-sm font-medium truncate">{user?.name}</p>
+              <p className="text-xs text-muted-foreground font-semibold truncate">
+                {user?.email}
+              </p>
+            </div>
+          )}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
