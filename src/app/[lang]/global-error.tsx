@@ -27,10 +27,10 @@ export default function Error({
   }, [error])
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <Card className="max-w-md w-full">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center text-red-600">
+          <CardTitle className="text-4xl font-bold text-center text-destructive">
             Oops! Something went wrong
           </CardTitle>
           <CardDescription className="text-center">
