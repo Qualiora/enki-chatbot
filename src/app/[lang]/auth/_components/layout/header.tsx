@@ -14,7 +14,7 @@ export function Header({
   locale: LocaleType
 }) {
   return (
-    <header className="sticky top-0 z-50 h-14 w-full flex justify-between items-center gap-2 px-4 bg-background border-b border-sidebar-border">
+    <header className="sticky top-0 z-50 h-14 w-full flex justify-between items-center gap-2 px-4 bg-background border-b border-border">
       <Logo href={ensureLocalizedPathname("/", locale)} />
       <LanguageDropdown dictionary={dictionary} />
     </header>

@@ -4,7 +4,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -23,11 +22,6 @@ export function Auth({ dictionary }: { dictionary: DictionaryType }) {
         <CardContent className="grid gap-2">
           <OAuthButtons dictionary={dictionary} />
         </CardContent>
-        <CardFooter>
-          <p className="text-center text-sm text-muted-foreground">
-            By continuing, you agree to our Terms of Service and Privacy Policy
-          </p>
-        </CardFooter>
       </Card>
     </section>
   )
