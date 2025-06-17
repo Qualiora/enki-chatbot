@@ -40,12 +40,6 @@ export interface RouteType {
   exceptions?: string[]
 }
 
-export interface OAuthLinkType {
-  href: string
-  label: string
-  icon: IconType
-}
-
 export interface ChatType {
   id: string
   title: string
