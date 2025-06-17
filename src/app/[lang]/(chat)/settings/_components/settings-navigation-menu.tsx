@@ -36,7 +36,7 @@ export function SettingsNavigationMenu({
           //   dictionary.navigation
           // )
           const localizedPathname = ensureLocalizedPathname(link.href, locale)
-          const isActive = isActivePathname(localizedPathname, pathname)
+          const isActive = localizedPathname === pathname
 
           return (
             <NavigationMenuItem key={link.title}>
