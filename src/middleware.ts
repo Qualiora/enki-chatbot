@@ -46,7 +46,7 @@ export async function middleware(request: NextRequest) {
 
     // Redirect authenticated users away from guest routes
     if (isAuthenticated && isGuest) {
-      return redirect(process.env.HOMEPAGE!, request)
+      return redirect(process.env.HOMEPAGE_PATH!, request)
     }
 
     // Redirect unauthenticated users from protected routes to auth
@@ -71,7 +71,7 @@ export async function middleware(request: NextRequest) {
    * NOTE
    * If your homepage is not '/', you need to configure a redirect
    * in next.config.mjs using the redirects() function,
-   * and set the HOMEPAGE environment variable accordingly.
+   * and set the HOMEPAGE_PATH environment variable accordingly.
    *
    * See https://nextjs.org/docs/app/building-your-application/routing/redirecting#redirects-in-nextconfigjs
    */

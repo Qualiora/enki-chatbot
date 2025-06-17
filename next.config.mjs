@@ -12,7 +12,7 @@ const nextConfig = {
       // For example, if "/:lang" comes before "/docs", Next.js may treat "docs" as a language.
       {
         source: "/:lang/chat",
-        destination: process.env.HOMEPAGE,
+        destination: process.env.HOMEPAGE_PATH,
         permanent: true,
       },
     ]
