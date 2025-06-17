@@ -2,7 +2,7 @@
 
 import { useCallback } from "react"
 import Link from "next/link"
-import { useParams, usePathname } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { Earth } from "lucide-react"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
@@ -13,6 +13,7 @@ import { relocalizePathname } from "@/lib/i18n"
 import { getDictionaryValue } from "@/lib/utils"
 
 import { useSettings } from "@/hooks/use-settings"
+import { useLocale } from "@/hooks/useLocale"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -30,10 +31,9 @@ export function LanguageDropdown({
   dictionary: DictionaryType
 }) {
   const pathname = usePathname()
-  const params = useParams()
+  const locale = useLocale()
   const { settings, updateSettings } = useSettings()
 
-  const locale = params.lang as LocaleType
   const direction = i18n.localeDirection[locale]
 
   const setLocale = useCallback(

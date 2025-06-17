@@ -1,16 +1,16 @@
 "use client"
 
 import Link from "next/link"
-import { useParams, usePathname } from "next/navigation"
+import { usePathname } from "next/navigation"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
-import type { LocaleType } from "@/types"
 
 import { settingsNavData } from "@/app/[lang]/(chat)/settings/_data/settings-nav"
 
 import { ensureLocalizedPathname } from "@/lib/i18n"
-import { cn, isActivePathname } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 
+import { useLocale } from "@/hooks/useLocale"
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -25,9 +25,7 @@ export function SettingsNavigationMenu({
   dictionary: DictionaryType
 }) {
   const pathname = usePathname()
-  const params = useParams()
-
-  const locale = params.lang as LocaleType
+  const locale = useLocale()
 
   return (
     <NavigationMenu>

@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback } from "react"
-import { useParams, usePathname, useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import {
   AlignLeft,
   AlignRight,
@@ -22,6 +22,7 @@ import { radii, themes } from "@/configs/themes"
 import { relocalizePathname } from "@/lib/i18n"
 
 import { useSettings } from "@/hooks/use-settings"
+import { useLocale } from "@/hooks/useLocale"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
@@ -38,9 +39,8 @@ export function Customizer() {
   const { settings, updateSettings, resetSettings } = useSettings()
   const pathname = usePathname()
   const router = useRouter()
-  const params = useParams()
+  const locale = useLocale()
 
-  const locale = params.lang as LocaleType
   const direction = i18n.localeDirection[locale]
 
   const handleSetLocale = useCallback(

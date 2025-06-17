@@ -1,21 +1,17 @@
 "use client"
 
 import Link from "next/link"
-import { useParams } from "next/navigation"
 import { Key } from "lucide-react"
-
-import type { LocaleType } from "@/types"
 
 import { ensureLocalizedPathname } from "@/lib/i18n"
 
+import { useLocale } from "@/hooks/useLocale"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
 export function ApiKeysRequiredAlert() {
-  const params = useParams()
-
-  const locale = params.lang as LocaleType
+  const locale = useLocale()
 
   return (
     <Alert

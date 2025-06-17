@@ -1,15 +1,15 @@
 "use client"
 
 import { useCallback } from "react"
-import { useParams } from "next/navigation"
 import { MoonStar, Sun, SunMoon } from "lucide-react"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
-import type { LocaleType, ModeType } from "@/types"
+import type { ModeType } from "@/types"
 
 import { i18n } from "@/configs/i18n"
 
 import { useSettings } from "@/hooks/use-settings"
+import { useLocale } from "@/hooks/useLocale"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -29,9 +29,8 @@ const modeIcons = {
 
 export function ModeDropdown({ dictionary }: { dictionary: DictionaryType }) {
   const { settings, updateSettings } = useSettings()
-  const params = useParams()
+  const locale = useLocale()
 
-  const locale = params.lang as LocaleType
   const direction = i18n.localeDirection[locale]
   const mode = settings.mode
   const ModeIcon = modeIcons[mode]

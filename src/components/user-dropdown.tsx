@@ -1,16 +1,15 @@
 "use client"
 
 import Link from "next/link"
-import { useParams } from "next/navigation"
 import { signOut } from "next-auth/react"
 import { CircleHelp, FileCheck2, LogOut, UserCog } from "lucide-react"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
-import type { LocaleType } from "@/types"
 
 import { ensureLocalizedPathname } from "@/lib/i18n"
 import { getInitials } from "@/lib/utils"
 
+import { useLocale } from "@/hooks/useLocale"
 import { useUserInfo } from "@/hooks/useUserInfo"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -26,10 +25,9 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 
 export function UserDropdown({ dictionary }: { dictionary: DictionaryType }) {
-  const params = useParams()
-  const { user, isLoading } = useUserInfo()
+  const locale = useLocale()
 
-  const locale = params.lang as LocaleType
+  const { user, isLoading } = useUserInfo()
 
   return (
     <DropdownMenu>
