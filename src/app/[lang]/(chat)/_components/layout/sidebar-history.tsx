@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import { toast } from "sonner"
 import useSWRInfinite from "swr/infinite"
 
+import type { DictionaryType } from "@/lib/get-dictionary"
 import type { ChatHistoryType, LocaleType } from "@/types"
 
 import {
@@ -34,7 +35,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import { ThreadItem } from "./sidebar-history-item"
 
-export function SidebarHistory() {
+export function SidebarHistory({ dictionary }: { dictionary: DictionaryType }) {
   const { setOpenMobile } = useSidebar()
   const { lang, threadId: id } = useParams()
   const loadMoreRef = useRef<HTMLDivElement | null>(null)

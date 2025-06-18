@@ -33,7 +33,7 @@ export function Sidebar({ dictionary }: { dictionary: DictionaryType }) {
 
       <SidebarContent>
         <ScrollArea className="flex-1">
-          <SidebarHistory />
+          <SidebarHistory dictionary={dictionary} />
         </ScrollArea>
       </SidebarContent>
     </SidebarWrapper>
