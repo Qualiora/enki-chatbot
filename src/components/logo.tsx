@@ -8,7 +8,7 @@ export function Logo({ className, href = "/", ...props }: ComponentProps<"a">) {
   return (
     <Link
       href={href}
-      className={cn("w-fit font-semibold text-xl", className)}
+      className={cn("w-fit font-black text-xl", className)}
       {...props}
     >
       Enki Chatbot
