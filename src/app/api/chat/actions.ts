@@ -6,8 +6,6 @@ import { generateText } from "ai"
 import type { ModelType } from "@/types"
 import type { LanguageModelV1, UIMessage } from "ai"
 
-import { isDevelopmentEnvironment } from "@/lib/constants"
-import { titleModel } from "@/lib/mock-models."
 import {
   deleteMessagesByChatIdAfterTimestamp,
   getMessageById,
@@ -26,7 +24,7 @@ export async function generateTitleFromUserMessage({
   model: LanguageModelV1
 }) {
   const { text: title } = await generateText({
-    model: isDevelopmentEnvironment ? titleModel : model,
+    model: model,
     system: `\n
     - you will generate a short title based on the first message a user begins a conversation with
     - ensure it is not more than 80 characters long
