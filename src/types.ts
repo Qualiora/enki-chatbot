@@ -1,4 +1,5 @@
 import type { i18n } from "@/configs/i18n"
+import type { Chat } from "@prisma/client"
 import type { LucideIcon, icons } from "lucide-react"
 import type { ComponentType, SVGAttributes } from "react"
 import type { models, providers } from "./configs/models"
@@ -40,16 +41,16 @@ export interface RouteType {
   exceptions?: string[]
 }
 
-export interface ChatType {
-  id: string
-  title: string
-  createdAt: string
-  updatedAt: string
+export type GroupedChatsType = {
+  today: Chat[]
+  yesterday: Chat[]
+  lastWeek: Chat[]
+  lastMonth: Chat[]
+  older: Chat[]
 }
-
-export interface GroupedChatsType {
-  sortedKeys: string[]
-  grouped: Record<string, ChatType[]>
+export interface ChatHistoryType {
+  chats: Chat[]
+  hasMore: boolean
 }
 
 export type ModelType = (typeof models)[number]

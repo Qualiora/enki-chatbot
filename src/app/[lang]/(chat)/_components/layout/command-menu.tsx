@@ -1,15 +1,21 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
+import useSWRInfinite from "swr/infinite"
 import { Search } from "lucide-react"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
-import type { GroupedChatsType, LocaleType } from "@/types"
+import type { ChatHistoryType, LocaleType } from "@/types"
 import type { DialogProps } from "@radix-ui/react-dialog"
 
 import { ensureLocalizedPathname } from "@/lib/i18n"
-import { cn } from "@/lib/utils"
+import {
+  cn,
+  fetcher,
+  getChatHistoryPaginationKey,
+  groupChatsByDate,
+} from "@/lib/utils"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -22,26 +28,59 @@ import {
 } from "@/components/ui/command"
 import { DialogTitle } from "@/components/ui/dialog"
 import { Keyboard } from "@/components/ui/keyboard"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 interface CommandMenuProps extends DialogProps {
   dictionary: DictionaryType
   buttonClassName?: string
-  chatsGrouped?: GroupedChatsType
 }
 
 export function CommandMenu({
   buttonClassName,
   dictionary,
-  chatsGrouped,
   ...props
 }: CommandMenuProps) {
   const [open, setOpen] = useState(false)
   const params = useParams()
   const router = useRouter()
+  const loadMoreRef = useRef<HTMLDivElement | null>(null)
+
+  const {
+    data: paginatedChatHistories,
+    setSize,
+    isValidating,
+  } = useSWRInfinite<ChatHistoryType>(getChatHistoryPaginationKey, fetcher, {
+    fallbackData: [],
+  })
 
   const threadId = params.threadId
   const locale = params.lang as LocaleType
+  const hasReachedEnd = paginatedChatHistories
+    ? paginatedChatHistories.some((page) => page.hasMore === false)
+    : false
+
+  useEffect(() => {
+    if (hasReachedEnd || isValidating) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setSize((size) => size + 1)
+        }
+      },
+      {
+        rootMargin: "100px",
+      }
+    )
+
+    const current = loadMoreRef.current
+    if (current) observer.observe(current)
+
+    return () => {
+      if (current) observer.unobserve(current)
+    }
+  }, [hasReachedEnd, isValidating, setSize])
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -91,33 +130,165 @@ export function CommandMenu({
         <CommandList>
           <CommandEmpty>{dictionary.search.noResults}</CommandEmpty>
           <ScrollArea className="h-[300px] max-h-[300px]">
-            {chatsGrouped?.sortedKeys.map((groupLabel) => (
-              <CommandGroup
-                key={groupLabel}
-                heading={groupLabel}
-                className="[&_[cmdk-group-items]]:space-y-1"
-              >
-                {chatsGrouped.grouped[groupLabel].map((chat) => {
-                  const localizedPathname = ensureLocalizedPathname(
-                    "/chat/" + chat.id,
-                    locale
-                  )
-                  const isActive = threadId === chat.id
+            {paginatedChatHistories &&
+              (() => {
+                const chatsFromHistory = paginatedChatHistories.flatMap(
+                  (paginatedChatHistory) => paginatedChatHistory.chats
+                )
 
-                  return (
-                    <CommandItem
-                      key={chat.id}
-                      onSelect={() =>
-                        runCommand(() => router.push(localizedPathname))
-                      }
-                      className={cn(isActive && "bg-accent")}
-                    >
-                      <span>{chat.title}</span>
-                    </CommandItem>
-                  )
-                })}
-              </CommandGroup>
-            ))}
+                const groupedChats = groupChatsByDate(chatsFromHistory)
+
+                return (
+                  <>
+                    {groupedChats.today.length > 0 && (
+                      <CommandGroup
+                        key="Today"
+                        heading="Today"
+                        className="[&_[cmdk-group-items]]:space-y-1"
+                      >
+                        {groupedChats.today.map((chat) => (
+                          <CommandItem
+                            key={chat.id}
+                            value={chat.id}
+                            onSelect={() =>
+                              runCommand(() =>
+                                router.push(
+                                  ensureLocalizedPathname(
+                                    "/chat/" + chat.id,
+                                    locale
+                                  )
+                                )
+                              )
+                            }
+                            className={cn(chat.id === threadId && "bg-accent")}
+                          >
+                            <span>{chat.title}</span>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    )}
+
+                    {groupedChats.yesterday.length > 0 && (
+                      <CommandGroup
+                        key="Yesterday"
+                        heading="Yesterday"
+                        className="[&_[cmdk-group-items]]:space-y-1"
+                      >
+                        {groupedChats.yesterday.map((chat) => (
+                          <CommandItem
+                            key={chat.id}
+                            value={chat.id}
+                            onSelect={() =>
+                              runCommand(() =>
+                                router.push(
+                                  ensureLocalizedPathname(
+                                    "/chat/" + chat.id,
+                                    locale
+                                  )
+                                )
+                              )
+                            }
+                            className={cn(chat.id === threadId && "bg-accent")}
+                          >
+                            <span>{chat.title}</span>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    )}
+
+                    {groupedChats.lastWeek.length > 0 && (
+                      <CommandGroup
+                        key="Last 7 days"
+                        heading="Last 7 days"
+                        className="[&_[cmdk-group-items]]:space-y-1"
+                      >
+                        {groupedChats.lastWeek.map((chat) => (
+                          <CommandItem
+                            key={chat.id}
+                            value={chat.id}
+                            onSelect={() =>
+                              runCommand(() =>
+                                router.push(
+                                  ensureLocalizedPathname(
+                                    "/chat/" + chat.id,
+                                    locale
+                                  )
+                                )
+                              )
+                            }
+                            className={cn(chat.id === threadId && "bg-accent")}
+                          >
+                            <span>{chat.title}</span>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    )}
+
+                    {groupedChats.lastMonth.length > 0 && (
+                      <CommandGroup
+                        key="Last 30 days"
+                        heading="Last 30 days"
+                        className="[&_[cmdk-group-items]]:space-y-1"
+                      >
+                        {groupedChats.lastMonth.map((chat) => (
+                          <CommandItem
+                            key={chat.id}
+                            value={chat.id}
+                            onSelect={() =>
+                              runCommand(() =>
+                                router.push(
+                                  ensureLocalizedPathname(
+                                    "/chat/" + chat.id,
+                                    locale
+                                  )
+                                )
+                              )
+                            }
+                            className={cn(chat.id === threadId && "bg-accent")}
+                          >
+                            <span>{chat.title}</span>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    )}
+
+                    {groupedChats.older.length > 0 && (
+                      <CommandGroup
+                        key="Older than last month"
+                        heading="Older than last month"
+                        className="[&_[cmdk-group-items]]:space-y-1"
+                      >
+                        {groupedChats.older.map((chat) => (
+                          <CommandItem
+                            key={chat.id}
+                            value={chat.id}
+                            onSelect={() =>
+                              runCommand(() =>
+                                router.push(
+                                  ensureLocalizedPathname(
+                                    "/chat/" + chat.id,
+                                    locale
+                                  )
+                                )
+                              )
+                            }
+                            className={cn(chat.id === threadId && "bg-accent")}
+                          >
+                            <span>{chat.title}</span>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    )}
+                  </>
+                )
+              })()}
+            <div ref={loadMoreRef} />
+            {!hasReachedEnd && (
+              <div className="flex flex-row gap-2 items-center text-muted-foreground text-sm px-2 mt-3">
+                <LoadingSpinner className="text-muted-foreground" />
+                <div>Loading Chats...</div>
+              </div>
+            )}
           </ScrollArea>
         </CommandList>
       </CommandDialog>

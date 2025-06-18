@@ -1,6 +1,6 @@
 "use client"
 
-import { Fragment, useState } from "react"
+import { Fragment, useEffect, useRef, useState } from "react"
 
 import type { UseChatHelpers } from "@ai-sdk/react"
 import type { UIMessage } from "ai"
@@ -8,6 +8,7 @@ import type { UIMessage } from "ai"
 import { cn } from "@/lib/utils"
 
 import { useModel } from "@/hooks/use-model"
+import { useScrollToBottom } from "@/hooks/use-scroll-to-bottom"
 import { Card, CardContent } from "@/components/ui/card"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -47,7 +48,7 @@ function ThreadMessageItemUser({
       >
         <CardContent className="p-3">
           {message.parts.map((part, index) => {
-            const key = `message-${message.id}-part-${index}`
+            const key = `message-${message.id}-part-${index}-${part.type}`
 
             if (part.type === "text") {
               if (isEditing) {
@@ -103,7 +104,7 @@ function ThreadMessageItemAssistant({
       <li className="group relative justify-self-start bg-transparent border-0">
         <CardContent className="p-0">
           {message.parts.map((part, index) => {
-            const key = `message-${message.id}-part-${index}`
+            const key = `message-${message.id}-part-${index}-${part.type}`
 
             if (part.type == "reasoning") {
               return (
@@ -152,23 +153,63 @@ function ThreadMessagePlaceholder() {
 export function ThreadMessageList({
   messages,
   threadId,
-  isSubmitted,
+  status,
   setMessages,
   reload,
   stop,
 }: {
   messages: UIMessage[]
   threadId: string
-  isSubmitted: boolean
+  status: UseChatHelpers["status"]
   setMessages: UseChatHelpers["setMessages"]
   reload: UseChatHelpers["reload"]
   stop: UseChatHelpers["stop"]
 }) {
   const isEmpty = messages.length === 0
+  const isSubmitted = status === "submitted"
+
+  const {
+    containerRef,
+    endRef,
+    scrollToBottom,
+    onViewportEnter,
+    onViewportLeave,
+  } = useScrollToBottom()
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [scrollToBottom])
+
+  const observer = useRef<IntersectionObserver | null>(null)
+
+  useEffect(() => {
+    if (!endRef.current || !containerRef.current) return
+
+    observer.current = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          onViewportEnter()
+        } else {
+          onViewportLeave()
+        }
+      },
+      {
+        root: containerRef.current,
+        threshold: 1.0,
+      }
+    )
+
+    observer.current.observe(endRef.current)
+
+    return () => {
+      observer.current?.disconnect()
+    }
+  }, [endRef, containerRef, onViewportEnter, onViewportLeave])
 
   return (
     <ul
-      className="w-full flex flex-col min-h-0"
+      ref={containerRef}
+      className="w-full flex flex-col min-h-0 scroll-smooth"
       aria-roledescription="chat messages"
     >
       <ScrollArea className="flex-1">
@@ -204,6 +245,7 @@ export function ThreadMessageList({
               {isSubmitted && <LoadingSpinner />}
             </div>
           )}
+          <div ref={endRef} />
         </div>
       </ScrollArea>
     </ul>

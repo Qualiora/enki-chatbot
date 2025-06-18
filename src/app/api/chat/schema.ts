@@ -8,9 +8,9 @@ const textPartSchema = z.object({
 })
 
 export const postRequestBodySchema = z.object({
-  id: z.string().nanoid(),
+  id: z.string().uuid(),
   message: z.object({
-    id: z.string().nanoid(),
+    id: z.string().uuid(),
     createdAt: z.coerce.date(),
     role: z.enum(["user"]),
     content: z.string().min(1).max(2000),

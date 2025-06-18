@@ -1,11 +1,11 @@
 "use client"
 
-import { useCallback } from "react"
+import { useCallback, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { Paperclip, Send, Square } from "lucide-react"
+import { ArrowDown, Paperclip, Send, Square } from "lucide-react"
 
 import type { LocaleType } from "@/types"
 import type { UseChatHelpers } from "@ai-sdk/react"
@@ -13,6 +13,7 @@ import type { UseChatHelpers } from "@ai-sdk/react"
 import { ensureLocalizedPathname } from "@/lib/i18n"
 
 import { useApiKey } from "@/hooks/use-api-key"
+import { useScrollToBottom } from "@/hooks/use-scroll-to-bottom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import {
@@ -70,7 +71,6 @@ export function ThreadInputForm({
       }
 
       append({
-        id: threadId,
         role: "user",
         parts: [{ type: "text", text: data.message }],
         content: data.message,
@@ -87,9 +87,30 @@ export function ThreadInputForm({
     }
   }
 
+  const { isAtBottom, scrollToBottom } = useScrollToBottom()
+
+  useEffect(() => {
+    if (isSubmitted) {
+      scrollToBottom()
+    }
+  }, [isSubmitted, scrollToBottom])
+
   return (
     <Form {...form}>
-      <div className="container max-w-3xl p-0 z-40">
+      <div className="container relative max-w-3xl p-0 z-40">
+        {!isAtBottom && (
+          <Button
+            className="absolute left-1/2 bottom-45 -translate-x-1/2 z-50"
+            size="icon"
+            variant="outline"
+            onClick={(event) => {
+              event.preventDefault()
+              scrollToBottom()
+            }}
+          >
+            <ArrowDown className="h-4 w-4" />
+          </Button>
+        )}
         <Card asChild>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
@@ -103,11 +124,7 @@ export function ThreadInputForm({
                   <FormItem className="flex-1">
                     <FormLabel className="sr-only">Chat Input.</FormLabel>
                     <FormControl>
-                      <ThreadInput
-                        {...field}
-                        disabled={isStreaming}
-                        onKeyDown={handleKeyDown}
-                      />
+                      <ThreadInput {...field} onKeyDown={handleKeyDown} />
                     </FormControl>
                     <FormDescription className="sr-only">
                       Press Enter to send. Press Shift + Enter to insert a new
@@ -130,7 +147,7 @@ export function ThreadInputForm({
                 aria-live="assertive"
               >
                 {isStreaming ? (
-                  <Square className="h-4 w-4" />
+                  <Square className="h-4 w-4 fill-current" />
                 ) : (
                   <Send className="h-4 w-4" />
                 )}

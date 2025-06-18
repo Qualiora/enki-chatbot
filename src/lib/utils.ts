@@ -1,8 +1,14 @@
 import { clsx } from "clsx"
+import { isToday, isYesterday, subMonths, subWeeks } from "date-fns"
 import { twMerge } from "tailwind-merge"
 
+import type { ChatHistoryType, GroupedChatsType } from "@/types"
+import type { Chat } from "@prisma/client"
 import type { CoreAssistantMessage } from "ai"
 import type { ClassValue } from "clsx"
+import type { ErrorCode } from "./errors"
+
+import { ChatSDKError } from "./errors"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -76,4 +82,93 @@ export function getTrailingMessageId({
   if (!trailingMessage) return null
 
   return trailingMessage.id
+}
+
+export function generateUUID() {
+  return crypto.randomUUID()
+}
+
+export async function fetchWithErrorHandlers(
+  input: RequestInfo | URL,
+  init?: RequestInit
+) {
+  try {
+    const response = await fetch(input, init)
+
+    if (!response.ok) {
+      const { code, cause } = await response.json()
+      throw new ChatSDKError(code as ErrorCode, cause)
+    }
+
+    return response
+  } catch (error: unknown) {
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      throw new ChatSDKError("offline:chat")
+    }
+
+    throw error
+  }
+}
+
+export const fetcher = async (url: string) => {
+  const response = await fetch(url)
+
+  if (!response.ok) {
+    const { code, cause } = await response.json()
+    throw new ChatSDKError(code as ErrorCode, cause)
+  }
+
+  return response.json()
+}
+
+export function getChatHistoryPaginationKey(
+  pageIndex: number,
+  previousPageData: ChatHistoryType
+) {
+  const PAGE_SIZE = 20
+
+  if (previousPageData && previousPageData.hasMore === false) {
+    return null
+  }
+
+  if (pageIndex === 0) return `/api/history?limit=${PAGE_SIZE}`
+
+  const firstChatFromPage = previousPageData.chats.at(-1)
+
+  if (!firstChatFromPage) return null
+
+  return `/api/history?ending_before=${firstChatFromPage.id}&limit=${PAGE_SIZE}`
+}
+
+export const groupChatsByDate = (chats: Chat[]): GroupedChatsType => {
+  const now = new Date()
+  const oneWeekAgo = subWeeks(now, 1)
+  const oneMonthAgo = subMonths(now, 1)
+
+  return chats.reduce(
+    (groups, chat) => {
+      const chatDate = new Date(chat.createdAt)
+
+      if (isToday(chatDate)) {
+        groups.today.push(chat)
+      } else if (isYesterday(chatDate)) {
+        groups.yesterday.push(chat)
+      } else if (chatDate > oneWeekAgo) {
+        groups.lastWeek.push(chat)
+      } else if (chatDate > oneMonthAgo) {
+        groups.lastMonth.push(chat)
+      } else {
+        groups.older.push(chat)
+      }
+
+      return groups
+    },
+    {
+      today: [],
+      yesterday: [],
+      lastWeek: [],
+      lastMonth: [],
+      older: [],
+    } as GroupedChatsType
+  )
 }

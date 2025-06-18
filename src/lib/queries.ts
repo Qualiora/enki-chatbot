@@ -105,10 +105,28 @@ export async function saveMessages({
 
 export async function getMessagesByChatId({ id }: { id: string }) {
   try {
-    return await db.message.findMany({
+    const rawMessages = await db.message.findMany({
       where: { chatId: id },
       orderBy: { createdAt: "asc" },
     })
+
+    // Map over the raw messages to parse the JSON strings
+    const parsedMessages = rawMessages.map((msg) => {
+      const parsedParts =
+        typeof msg.parts === "string" ? JSON.parse(msg.parts) : msg.parts
+      const parsedAttachments =
+        typeof msg.attachments === "string"
+          ? JSON.parse(msg.attachments)
+          : msg.attachments
+
+      return {
+        ...msg,
+        parts: parsedParts,
+        attachments: parsedAttachments,
+      }
+    })
+
+    return parsedMessages
   } catch {
     throw new ChatSDKError(
       "bad_request:database",

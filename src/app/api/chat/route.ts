@@ -18,8 +18,12 @@ import type { ResumableStreamContext } from "resumable-stream"
 import type { PostRequestBody } from "./schema"
 
 import { getSession } from "@/lib/auth"
-import { isProductionEnvironment } from "@/lib/constants"
+import {
+  isDevelopmentEnvironment,
+  isProductionEnvironment,
+} from "@/lib/constants"
 import { ChatSDKError } from "@/lib/errors"
+import { chatModel } from "@/lib/mock-models."
 import {
   createStreamId,
   deleteChatById,
@@ -37,6 +41,10 @@ import { postRequestBodySchema } from "./schema"
 export const maxDuration = 60
 
 const getModel = (provider: string, model: string) => {
+  if (isDevelopmentEnvironment) {
+    return chatModel
+  }
+
   switch (provider) {
     case "openai":
       return openai(model)
@@ -77,7 +85,7 @@ export async function POST(request: NextRequest) {
   try {
     const json = await request.json()
     requestBody = postRequestBodySchema.parse(json)
-  } catch (_) {
+  } catch {
     return new ChatSDKError("bad_request:api").toResponse()
   }
 

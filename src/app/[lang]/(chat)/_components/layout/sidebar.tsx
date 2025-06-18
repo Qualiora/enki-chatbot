@@ -1,43 +1,24 @@
 "use client"
 
 import Link from "next/link"
-import { useParams } from "next/navigation"
 import { Plus } from "lucide-react"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
-import type { GroupedChatsType, LocaleType } from "@/types"
 
-import { i18n } from "@/configs/i18n"
-import { ensureLocalizedPathname } from "@/lib/i18n"
-
+import { useIsRtl } from "@/hooks/use-is-rtl"
 import { buttonVariants } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
   Sidebar as SidebarWrapper,
 } from "@/components/ui/sidebar"
 import { Logo } from "@/components/logo"
 import { CommandMenu } from "./command-menu"
+import { SidebarHistory } from "./sidebar-history"
 
-export function Sidebar({
-  dictionary,
-  chatsGrouped,
-}: {
-  dictionary: DictionaryType
-  chatsGrouped?: GroupedChatsType
-}) {
-  const params = useParams()
-
-  const threadId = params.threadId
-  const locale = params.lang as LocaleType
-  const direction = i18n.localeDirection[locale]
-  const isRTL = direction === "rtl"
+export function Sidebar({ dictionary }: { dictionary: DictionaryType }) {
+  const isRTL = useIsRtl()
 
   return (
     <SidebarWrapper side={isRTL ? "right" : "left"}>
@@ -47,34 +28,13 @@ export function Sidebar({
           <Plus className="me-2 w-4 h-4" />
           <span>New Chat</span>
         </Link>
-        <CommandMenu dictionary={dictionary} chatsGrouped={chatsGrouped} />
+        <CommandMenu dictionary={dictionary} />
       </SidebarHeader>
 
       <SidebarContent>
-        {chatsGrouped?.sortedKeys.map((groupLabel) => (
-          <SidebarGroup key={groupLabel}>
-            <SidebarGroupLabel>{groupLabel}</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {chatsGrouped.grouped[groupLabel].map((chat) => {
-                  const localizedPathname = ensureLocalizedPathname(
-                    "/chat/" + chat.id,
-                    locale
-                  )
-                  const isActive = threadId === chat.id
-
-                  return (
-                    <SidebarMenuItem key={chat.id}>
-                      <SidebarMenuButton isActive={isActive} asChild>
-                        <Link href={localizedPathname}>{chat.title}</Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  )
-                })}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
+        <ScrollArea className="flex-1">
+          <SidebarHistory />
+        </ScrollArea>
       </SidebarContent>
     </SidebarWrapper>
   )
