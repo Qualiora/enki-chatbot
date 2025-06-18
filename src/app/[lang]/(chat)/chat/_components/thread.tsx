@@ -34,6 +34,10 @@ export function Thread({
   const { selectedModel } = useModel()
   const { hasRequiredKeys } = useApiKey()
   const { mutate } = useSWRConfig()
+  const { getKey } = useApiKey()
+  const { getModelConfig } = useModel()
+
+  const modelConfig = getModelConfig()
 
   const {
     id,
@@ -64,6 +68,9 @@ export function Thread({
       if (error instanceof ChatSDKError) {
         toast.error(error.message)
       }
+    },
+    headers: {
+      [modelConfig.headerKey]: getKey(modelConfig.provider) || "",
     },
   })
 

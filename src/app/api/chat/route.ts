@@ -1,7 +1,8 @@
+import { headers } from "next/headers"
 import { after } from "next/server"
-import { anthropic } from "@ai-sdk/anthropic"
-import { google } from "@ai-sdk/google"
-import { openai } from "@ai-sdk/openai"
+import { createAnthropic } from "@ai-sdk/anthropic"
+import { createGoogleGenerativeAI } from "@ai-sdk/google"
+import { createOpenAI } from "@ai-sdk/openai"
 import {
   appendClientMessage,
   appendResponseMessages,
@@ -12,6 +13,7 @@ import {
 import { differenceInSeconds } from "date-fns"
 import { createResumableStreamContext } from "resumable-stream"
 
+import type { ModelConfigType, ModelType } from "@/types"
 import type { Chat } from "@prisma/client"
 import type { NextRequest } from "next/server"
 import type { ResumableStreamContext } from "resumable-stream"
@@ -20,6 +22,7 @@ import type { PostRequestBody } from "./schema"
 import { getSession } from "@/lib/auth"
 import { isProductionEnvironment } from "@/lib/constants"
 import { ChatSDKError } from "@/lib/errors"
+import { getModelConfig } from "@/lib/models"
 import {
   createStreamId,
   deleteChatById,
@@ -36,16 +39,22 @@ import { postRequestBodySchema } from "./schema"
 
 export const maxDuration = 60
 
-const getModel = (provider: string, model: string) => {
+const getModel = (
+  provider: string,
+  model: string,
+  apiKey: string,
+  modelConfig: ModelConfigType
+) => {
   switch (provider) {
-    case "openai":
-      return openai(model)
     case "anthropic":
-      return anthropic(model)
-    case "google":
-      return google(model)
+      const anthropic = createAnthropic({ apiKey })
+      return anthropic(modelConfig.modelId)
+    case "openai":
+      const openai = createOpenAI({ apiKey })
+      return openai(modelConfig.modelId)
     default:
-      return openai("gpt-4o")
+      const google = createGoogleGenerativeAI({ apiKey })
+      return google(modelConfig.modelId)
   }
 }
 
@@ -91,11 +100,20 @@ export async function POST(request: NextRequest) {
     }
 
     const chat = await getChatById({ id })
+    const headersList = await headers()
+    const modelConfig = getModelConfig(selectedChatModel as ModelType)
+
+    const apiKey = headersList.get(modelConfig.headerKey) as string
 
     if (!chat) {
       const title = await generateTitleFromUserMessage({
         message,
-        model: getModel(selectedProvider, selectedChatModel),
+        model: getModel(
+          selectedProvider,
+          selectedChatModel,
+          apiKey,
+          modelConfig
+        ),
       })
 
       await saveChat({
@@ -135,7 +153,12 @@ export async function POST(request: NextRequest) {
     const stream = createDataStream({
       execute: (dataStream) => {
         const result = streamText({
-          model: getModel(selectedProvider, selectedChatModel),
+          model: getModel(
+            selectedProvider,
+            selectedChatModel,
+            apiKey,
+            modelConfig
+          ),
           messages,
           maxSteps: 5,
           experimental_transform: smoothStream({ chunking: "word" }),
