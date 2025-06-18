@@ -26,6 +26,7 @@ const ApiKeysSchema = z.object({
   google: z.string().trim().optional(),
   openrouter: z.string().trim().optional(),
   openai: z.string().trim().optional(),
+  anthropic: z.string().trim().optional(),
 })
 
 type ApiKeysFormType = z.infer<typeof ApiKeysSchema>
@@ -35,6 +36,8 @@ export function ApiKeysForm() {
   const [showGoogleKey, setShowGoogleKey] = useState(false)
   const [showOpenrouterKey, setShowOpenrouterKey] = useState(false)
   const [showOpenaiKey, setShowOpenaiKey] = useState(false)
+  const [showAnthropicKey, setShowAnthropicKey] = useState(false)
+
   const form = useForm<ApiKeysFormType>({
     resolver: zodResolver(ApiKeysSchema),
     defaultValues: keys,
@@ -159,6 +162,42 @@ export function ApiKeysForm() {
                     {showOpenaiKey
                       ? "Hide OpenAI API key"
                       : "Show OpenAI API key"}
+                  </span>
+                </Button>
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="anthropic"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Anthropic</FormLabel>
+              <div className="relative">
+                <FormControl>
+                  <Input
+                    type={showAnthropicKey ? "text" : "password"}
+                    {...field}
+                  />
+                </FormControl>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowAnthropicKey((prev) => !prev)}
+                >
+                  {showAnthropicKey ? (
+                    <EyeOff className="h-4 w-4 text-muted-foreground" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-muted-foreground" />
+                  )}
+                  <span className="sr-only">
+                    {showAnthropicKey
+                      ? "Hide Anthropic API key"
+                      : "Show Anthropic API key"}
                   </span>
                 </Button>
               </div>

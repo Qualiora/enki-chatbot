@@ -1,6 +1,11 @@
 import type { ModelConfigType, ModelType } from "@/types"
 
-export const providers = ["google", "openrouter", "openai"] as const
+export const providers = [
+  "google",
+  "openrouter",
+  "openai",
+  "anthropic",
+] as const
 
 export const models = [
   "Deepseek R1 0528",
@@ -9,6 +14,7 @@ export const models = [
   "Gemini 2.5 Flash",
   "GPT-4o",
   "GPT-4.1-mini",
+  "Claude 4 Sonnet",
 ] as const
 
 export const modelConfigs = {
@@ -41,5 +47,10 @@ export const modelConfigs = {
     modelId: "gpt-4.1-mini",
     provider: "openai",
     headerKey: "X-OpenAI-API-Key",
+  },
+  "Claude 4 Sonnet": {
+    modelId: "claude-sonnet-4-20250514",
+    provider: "anthropic",
+    headerKey: "X-Anthropic-API-Key",
   },
 } as const satisfies Record<ModelType, ModelConfigType>
